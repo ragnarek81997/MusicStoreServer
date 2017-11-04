@@ -268,7 +268,6 @@
     <Compile Include="Controllers\ApiControllers\CustomApiController.cs" />
     <Compile Include="Controllers\ApiControllers\V1\AccountController.cs" />
     <Compile Include="Controllers\ApiControllers\V1\ProfileController.cs" />
-    <Compile Include="Controllers\ApiControllers\V1\SettingsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Extensions\ModelStateExtension.cs" />
     <Compile Include="Global.asax.cs">

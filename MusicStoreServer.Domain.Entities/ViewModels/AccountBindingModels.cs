@@ -89,18 +89,16 @@ namespace MusicStoreServer.Domain.Entities.ViewModels
 
         [Required]
         [EmailAddress]
-        //[RegularExpression(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", ErrorMessage = "Not correct email format")]
         public string Email { get; set; }
-
-        //[Required]
-        //[RegularExpression(@"\+?[0-9]{7,15}", ErrorMessage = "Invalid Phone Number")]
-        //public string PhoneNumber { get; set; }
 
         [Required]
         public string Password { get; set; }
 
         [Required]
-        public string Captcha { get; set; }
+        public DateTime? BirthDate { get; set; }
+
+        //[Required]
+        //public string Captcha { get; set; }
     }
 
     public class RegisterExternalBindingModel

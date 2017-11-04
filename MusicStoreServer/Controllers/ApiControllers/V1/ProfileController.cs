@@ -23,17 +23,14 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
     public class ProfileController : ApiController
     {
         private readonly IUserService _userService;
-        private readonly IUserRepository _userRepository;
 
-        public ProfileController(IUserService userService, IUserRepository userRepository)
+        public ProfileController(IUserService userService)
         {
             this._userService = userService;
-            this._userRepository = userRepository;
         }
 
         #region Initialization
         private ApplicationUserManager _userManager;
-
 
         public ApplicationUserManager UserManager
         {
@@ -99,7 +96,7 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
         public async Task<IHttpActionResult> GetCurrentUser()
         {
             var userId = User.Identity.GetUserId();
-            ShortUser result = await _userService.GetCurrentUser(userId);
+            var result = await _userService.GetCurrentUser(userId);
             return Ok(result);
         }
 

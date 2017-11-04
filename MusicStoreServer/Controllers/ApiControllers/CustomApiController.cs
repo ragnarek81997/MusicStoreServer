@@ -1,4 +1,5 @@
-﻿using MusicStoreServer.Domain.Entities.Enums;
+﻿using Microsoft.AspNet.Identity;
+using MusicStoreServer.Domain.Entities.Enums;
 using MusicStoreServer.Domain.Entities.Struct;
 using MusicStoreServer.Web.Results;
 using System;
@@ -32,6 +33,30 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers
             {
                 return new ErrorResult(source, Request);
             }
+        }
+
+        protected ServiceResult GetServiceResult(IdentityResult identityResult)
+        {
+            var result = new ServiceResult();
+
+            if (result == null)
+            {
+                result.Error.Code = ErrorStatusCode.InternalServerError;
+                result.Error.Description = result.Error.Code.ToString();
+            }
+            else
+            {
+                result.Success = identityResult.Succeeded;
+                if (!identityResult.Succeeded)
+                {
+                    if (identityResult.Errors != null)
+                    {
+                        result.Error.Description = string.Join("; ", identityResult.Errors);
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }
