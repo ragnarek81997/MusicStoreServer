@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace MusicStoreServer.Domain.Entities.Models
 {
-    public class TestModel : BaseEntity
+    public class GenreModel : BaseEntity
     {
-        public string First { get; set; }
-        public int Second { get; set; }
+        public string Name { get; set; }
     }
 }

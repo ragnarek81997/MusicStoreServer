@@ -19,12 +19,12 @@ using AspNet.Identity.MongoDB;
 
 namespace MusicStoreServer.Infrastructure.Business
 {
-    public class AccountService : IAccountService
+    public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
         private ServiceResult<ApplicationUser> _serviceResult;
 
-        public AccountService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository)
         {
             this._userRepository = userRepository;
         }
@@ -58,32 +58,11 @@ namespace MusicStoreServer.Infrastructure.Business
         //}
         #endregion
 
-        public async Task<ServiceResult> Register(RegisterBindingModel model)
+        public async Task<ShortUser> GetCurrentUser(string id)
         {
-            var serviceResult = new ServiceResult();
-
-            var user = new ApplicationUser()
-            {
-                UserName = model.Email,
-                Email = model.Email,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-            };
-
-            var result = await UserManager.CreateAsync(user, model.Password);
-
-            if (result.Succeeded)
-            {
-                UserManager.AddToRole(user.Id, UserRoles.User.ToString());
-                serviceResult.Success = true;
-            }
-            else
-            {
-                serviceResult.Error.Code = ErrorStatusCode.InvalidSignUp;
-                serviceResult.Error.Description = result?.Errors?.FirstOrDefault();
-            }
-
-            return serviceResult;
+            var result = await _userRepository.GetCurrentUser(id);
+            result.PhotoPath = UploadImageProperties.BlobAdress + result.PhotoPath;
+            return result;
         }
     }
 }

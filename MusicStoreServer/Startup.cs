@@ -7,6 +7,8 @@ using System;
 using System.Configuration;
 using System.Web.Http;
 using MusicStoreServer.Infrastructure.Business.Hubs;
+using System.Threading.Tasks;
+using System.Net;
 
 [assembly: OwinStartupAttribute(typeof(MusicStoreServer.Web.Startup))]
 namespace MusicStoreServer.Web
@@ -39,6 +41,5 @@ namespace MusicStoreServer.Web
 
             app.MapSignalR();
         }
-
     }
 }

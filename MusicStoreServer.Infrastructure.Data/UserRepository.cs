@@ -22,9 +22,7 @@ namespace MusicStoreServer.Infrastructure.Data
             Email = x.Email,
             FirstName = x.FirstName,
             LastName = x.LastName,
-            Image = x.Image,
-            PhoneNumber = x.PhoneNumber,
-            Roles = x.Roles
+            PhotoPath = x.PhotoPath
         });
 
         public async Task<ShortUser> GetCurrentUser(string userId)

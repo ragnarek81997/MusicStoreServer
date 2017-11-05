@@ -43,14 +43,23 @@ namespace MusicStoreServer.Web.Util
             //configuration
 
             // repository
-            kernel.Bind<ITestModelRepository>().To<TestModelRepository>();
             kernel.Bind<IUserRepository>().To<UserRepository>();
 
+            kernel.Bind<IAlbumRepository>().To<AlbumRepository>();
+            kernel.Bind<IArtistRepository>().To<ArtistRepository>();
+            kernel.Bind<IGenreRepository>().To<GenreRepository>();
+            kernel.Bind<IPlaylistRepository>().To<PlaylistRepository>();
+            kernel.Bind<ISongRepository>().To<SongRepository>();
 
             // service
             kernel.Bind<IUserService>().To<UserService>();
             kernel.Bind<IAccountService>().To<AccountService>();
-            kernel.Bind<ISettingsService>().To<SettingsService>();
+
+            kernel.Bind<IAlbumService>().To<AlbumService>();
+            kernel.Bind<IArtistService>().To<ArtistService>();
+            kernel.Bind<IGenreService>().To<GenreService>();
+            kernel.Bind<IGenreService>().To<GenreService>();
+            kernel.Bind<ISongService>().To<SongService>();
         }
     }
 }

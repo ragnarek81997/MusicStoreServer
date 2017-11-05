@@ -63,10 +63,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IApplicationUserRepository.cs" />
+    <Compile Include="IUserRepository.cs" />
+    <Compile Include="IAlbumRepository.cs" />
+    <Compile Include="IArtistRepository.cs" />
+    <Compile Include="IGenreRepository.cs" />
+    <Compile Include="ISongRepository.cs" />
+    <Compile Include="IPlaylistRepository.cs" />
     <Compile Include="Infrastructure\GenericRepository.cs" />
     <Compile Include="Infrastructure\IRepository.cs" />
-    <Compile Include="ITestModelRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

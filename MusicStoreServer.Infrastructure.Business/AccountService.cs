@@ -19,19 +19,17 @@ using AspNet.Identity.MongoDB;
 
 namespace MusicStoreServer.Infrastructure.Business
 {
-    public class UserService : IUserService
+    public class AccountService : IAccountService
     {
         private readonly IUserRepository _userRepository;
-        private ServiceResult<ApplicationUser> _serviceResult;
 
-        public UserService(IUserRepository userRepository)
+        public AccountService(IUserRepository userRepository)
         {
             this._userRepository = userRepository;
         }
 
         #region Initialization
         private ApplicationUserManager _userManager;
-        //private ApplicationRoleManager _roleManager;
 
         public ApplicationUserManager UserManager
         {
@@ -44,25 +42,34 @@ namespace MusicStoreServer.Infrastructure.Business
                 _userManager = value;
             }
         }
-
-        //public ApplicationRoleManager RoleManager
-        //{
-        //    get
-        //    {
-        //        return _roleManager ?? HttpContext.Current.GetOwinContext().Get<ApplicationRoleManager>();
-        //    }
-        //    private set
-        //    {
-        //        _roleManager = value;
-        //    }
-        //}
         #endregion
 
-        public async Task<ShortUser> GetCurrentUser(string id)
+        public async Task<ServiceResult> Register(RegisterBindingModel model)
         {
-            var result = await _userRepository.GetCurrentUser(id);
-            result.Image = UploadImageProperties.BlobAdress + result.Image;
-            return result;
+            var serviceResult = new ServiceResult();
+
+            var user = new ApplicationUser()
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+            };
+
+            var result = await UserManager.CreateAsync(user, model.Password);
+
+            if (result.Succeeded)
+            {
+                UserManager.AddToRole(user.Id, UserRoles.User.ToString());
+                serviceResult.Success = true;
+            }
+            else
+            {
+                serviceResult.Error.Code = ErrorStatusCode.InvalidSignUp;
+                serviceResult.Error.Description = result?.Errors?.FirstOrDefault();
+            }
+
+            return serviceResult;
         }
     }
 }

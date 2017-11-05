@@ -14,62 +14,6 @@ namespace MusicStoreServer.Web
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-            routes.MapMvcAttributeRoutes();
-
-            routes.MapRoute(
-                name: "Home",
-                url: "",
-                defaults: new { controller = "Home", action = "Index" }
-            );
-
-            routes.MapRoute(
-                name: "signup",
-                url: "signup",
-                defaults: new { controller = "Home", action = "Index" }
-            );
-
-            routes.MapRoute(
-                name: "signin",
-                url: "signin",
-                defaults: new { controller = "Home", action = "Index" }
-            );
-
-            routes.MapRoute(
-                name: "forgotpassword",
-                url: "forgotpassword",
-                defaults: new { controller = "Home", action = "Index" }
-            );
-
-            routes.MapRoute(
-                name: "Profile",
-                url: "profile/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
-            );
-
-            routes.MapRoute(
-                name: "ResetPassword",
-                url: "resetpassword",
-                defaults: new { controller = "Home", action = "Index" }
-            );
-
-            routes.MapRoute(
-                name: "AccessDenied",
-                url: "error/access-denied",
-                defaults: new { controller = "Home", action = "Index" }
-            );
-
-            routes.MapRoute(
-                name: "NotFound",
-                url: "error/not-found",
-                defaults: new { controller = "Home", action = "Index" }
-            );
-
-            routes.MapRoute(
-                name: "ServerError",
-                url: "error/server-error",
-                defaults: new { controller = "Home", action = "Index" }
-            );
-
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

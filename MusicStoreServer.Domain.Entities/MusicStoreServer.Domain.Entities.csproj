@@ -114,7 +114,15 @@
     <Compile Include="Infrastructure\IBaseEntity.cs" />
     <Compile Include="Infrastructure\IdentityConfig.cs" />
     <Compile Include="Infrastructure\IdentityModels.cs" />
-    <Compile Include="Models\TestModel.cs" />
+    <Compile Include="Models\AlbumModel.cs" />
+    <Compile Include="Models\ArtistModel.cs" />
+    <Compile Include="Models\GenreModel.cs" />
+    <Compile Include="Models\Link\LinkModel.cs" />
+    <Compile Include="Models\Link\TorrentInfoModel.cs" />
+    <Compile Include="Models\Link\TorrentLinkModel.cs" />
+    <Compile Include="Models\Link\UrlLinkModel.cs" />
+    <Compile Include="Models\PlaylistModel.cs" />
+    <Compile Include="Models\SongModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResultModels\Error.cs" />
     <Compile Include="Struct\CropImage.cs" />

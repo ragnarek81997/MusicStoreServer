@@ -267,6 +267,11 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ApiControllers\CustomApiController.cs" />
     <Compile Include="Controllers\ApiControllers\V1\AccountController.cs" />
+    <Compile Include="Controllers\ApiControllers\V1\SongController.cs" />
+    <Compile Include="Controllers\ApiControllers\V1\PlaylistController.cs" />
+    <Compile Include="Controllers\ApiControllers\V1\GenreController.cs" />
+    <Compile Include="Controllers\ApiControllers\V1\ArtistController.cs" />
+    <Compile Include="Controllers\ApiControllers\V1\AlbumController.cs" />
     <Compile Include="Controllers\ApiControllers\V1\ProfileController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Extensions\ModelStateExtension.cs" />

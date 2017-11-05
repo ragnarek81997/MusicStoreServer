@@ -49,10 +49,8 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers
                 result.Success = identityResult.Succeeded;
                 if (!identityResult.Succeeded)
                 {
-                    if (identityResult.Errors != null)
-                    {
-                        result.Error.Description = string.Join("; ", identityResult.Errors);
-                    }
+                    result.Error.Description = identityResult?.Errors?.FirstOrDefault();
+                    result.Error.Code = ErrorStatusCode.BudRequest;
                 }
             }
 
