@@ -34,6 +34,9 @@
       <HintPath>..\packages\AspNet.Identity.MongoDB.2.0.8\lib\net45\AspNet.Identity.MongoDB.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="BencodeNET, Version=2.2.22.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BencodeNET.2.2.22\lib\net45\BencodeNET.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
       <Private>True</Private>
@@ -114,6 +117,8 @@
   <ItemGroup>
     <Compile Include="ArtistService.cs" />
     <Compile Include="GenreService.cs" />
+    <Compile Include="DownloadService.cs" />
+    <Compile Include="TorrentService.cs" />
     <Compile Include="PlaylistService.cs" />
     <Compile Include="SongService.cs" />
     <Compile Include="AlbumService.cs" />

@@ -109,6 +109,8 @@
   <ItemGroup>
     <Compile Include="IArtistService.cs" />
     <Compile Include="IGenreService.cs" />
+    <Compile Include="IDownloadService.cs" />
+    <Compile Include="ITorrentService.cs" />
     <Compile Include="ISongService.cs" />
     <Compile Include="IPlaylistService.cs" />
     <Compile Include="IAlbumService.cs" />

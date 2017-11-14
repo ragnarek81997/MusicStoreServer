@@ -60,6 +60,10 @@ namespace MusicStoreServer.Web.Util
             kernel.Bind<IGenreService>().To<GenreService>();
             kernel.Bind<IGenreService>().To<GenreService>();
             kernel.Bind<ISongService>().To<SongService>();
+
+            kernel.Bind<IDownloadService>().To<DownloadService>();
+            kernel.Bind<ITorrentService>().To<TorrentService>();
+            
         }
     }
 }
