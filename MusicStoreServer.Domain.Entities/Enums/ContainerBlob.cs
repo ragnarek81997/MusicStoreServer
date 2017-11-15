@@ -8,6 +8,7 @@ namespace MusicStoreServer.Domain.Entities.Enums
 {
     public enum ContainerBlob
     {
-        Images
+        Images,
+        Songs
     }
 }

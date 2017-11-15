@@ -96,6 +96,7 @@
     <Compile Include="AlbumRepository.cs" />
     <Compile Include="UserRepository.cs" />
     <Compile Include="Utility\AzureBlob\UploadBase.cs" />
+    <Compile Include="Utility\AzureBlob\UploadSong.cs" />
     <Compile Include="Utility\AzureBlob\UploadImage.cs" />
   </ItemGroup>
   <ItemGroup>

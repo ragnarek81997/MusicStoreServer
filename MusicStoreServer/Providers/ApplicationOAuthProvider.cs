@@ -98,11 +98,16 @@ namespace MusicStoreServer.Web.Providers
         {
             IDictionary<string, string> data = new Dictionary<string, string>
             {
-                { "userName", user.UserName },
+
                 { "id", user.Id },
-                { "roles", string.Join(",", user.Roles) },
                 { "email", user.Email },
+                { "firstName", user.FirstName },
+                { "lastName", user.LastName },
+                { "birthDate", user.BirthDate?.ToString("R") }
             };
+
+            if(!string.IsNullOrWhiteSpace(user.PhotoPath))
+                data.Add("photoPath", user.PhotoPath);
 
             return new AuthenticationProperties(data);
         }

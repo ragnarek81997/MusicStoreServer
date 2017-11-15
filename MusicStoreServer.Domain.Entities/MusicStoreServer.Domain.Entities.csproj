@@ -101,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dictionaries\ErrorDescriptions.cs" />
+    <Compile Include="Dictionaries\UploadSongProperties.cs" />
     <Compile Include="Dictionaries\UploadImageProperties.cs" />
     <Compile Include="Enums\ContainerBlob.cs" />
     <Compile Include="Enums\DatabaseResultType.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="ResultModels\Error.cs" />
     <Compile Include="Struct\CropImage.cs" />
     <Compile Include="Struct\ServiceResult.cs" />
+    <Compile Include="Struct\UploadSongResult.cs" />
     <Compile Include="Struct\UploadBaseResult.cs" />
     <Compile Include="Struct\UploadImageResult.cs" />
     <Compile Include="ViewModels\AccountBindingModels.cs" />

@@ -43,7 +43,15 @@ namespace MusicStoreServer.Web
             };
 
             // Enable the application to use bearer tokens to authenticate users
-            app.UseOAuthBearerTokens(OAuthOptions);
+            //app.UseOAuthBearerTokens(OAuthOptions);
+
+            app.UseOAuthAuthorizationServer(OAuthOptions);
+
+            app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions
+            {
+                Provider = new ApplicationOAuthBearerAuthenticationProvider(),
+            });
+
             // Uncomment the following lines to enable logging in with third party login providers
             //app.UseMicrosoftAccountAuthentication(
             //    clientId: "",
