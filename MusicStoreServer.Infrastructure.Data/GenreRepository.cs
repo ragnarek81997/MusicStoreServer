@@ -1,5 +1,4 @@
-﻿using MongoDB.Driver;
-using MusicStoreServer.Domain.Entities.Infrastructure;
+﻿using MusicStoreServer.Domain.Entities.Infrastructure;
 using MusicStoreServer.Domain.Entities.Models;
 using MusicStoreServer.Domain.Interfaces;
 using MusicStoreServer.Domain.Interfaces.Infrastructure;
@@ -58,10 +57,7 @@ namespace MusicStoreServer.Infrastructure.Data
 
         public async Task<DatabaseResult> Update(GenreModel model)
         {
-            var updateDefinition = Builders<GenreModel>.Update
-                .Set(x => x.Name, model.Name);
-
-            return await base.UpdateOneAsync(model.Id, updateDefinition);
+            return await base.UpdateOneAsync(model);
         }
     }
 }

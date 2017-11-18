@@ -11,13 +11,11 @@ using System;
 using MusicStoreServer.Domain.Entities.Dictionaries;
 using MusicStoreServer.Domain.Interfaces;
 using MusicStoreServer.Services.Interfaces;
-using MongoDB.Driver;
 using Microsoft.AspNet.Identity.Owin;
 using System.Net;
 using System.Net.Http;
 using System.Collections.Generic;
 using MusicStoreServer.Domain.Entities.Models;
-using MusicStoreServer.Domain.Entities.Models.Link;
 
 namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
 {
@@ -26,12 +24,13 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
     public class SongController : CustomApiController
     {
         private readonly ISongService _songService;
-        private readonly ITorrentService _torrentService;
+        private readonly IUserService _userService;
 
-        public SongController(ISongService songService, ITorrentService torrentService)
+
+        public SongController(ISongService songService, IUserService userService)
         {
             this._songService = songService;
-            this._torrentService = torrentService;
+            this._userService = userService;
         }
 
         [HttpGet]
@@ -64,18 +63,12 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
                 return ServiceResult(serviceResult);
             }
 
-            UrlLinkModel link = null;
-            foreach (var item in model.Links)
+            //TODO: replace
+            LinkModel link = null;
+            foreach(var item in model.Links)
             {
-                if (item is UrlLinkModel)
-                {
-                    link = item as UrlLinkModel;
-                    if(!string.IsNullOrWhiteSpace(link.Id) && !string.IsNullOrWhiteSpace(link.OwnerId) && link.OwnerId == User.Identity.GetUserId() && string.IsNullOrWhiteSpace(link.Url))
-                    {
-                        break;
-                    }
-                    link = null;
-                }
+                link = item;
+                break;
             }
 
             if (link == null)
@@ -88,8 +81,8 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
 
             UploadSong upload = new UploadSong();
 
-            string inputPath = UploadSongProperties.TemporaryFolder + link.Id + UploadSongProperties.SongsFolder;
-            string sourcePath = UploadSongProperties.SongsFolder + link.Id + UploadSongProperties.SongsFolder;
+            string inputPath = UploadSongProperties.TemporaryFolder + link.Id + UploadSongProperties.FileType;
+            string sourcePath = string.Empty;
             var moveSongResult = upload.MoveFile(inputPath, sourcePath);
 
             if (!String.IsNullOrEmpty(moveSongResult.Error))
@@ -97,30 +90,6 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
                 ModelState.AddModelError("Move", moveSongResult.Error);
                 return BadRequest(ModelState);
             }
-
-            link.Url = UploadSongProperties.BlobAdress + moveSongResult.PathFile;
-
-            //var downloadSongResult = await upload.DownloadFileToStreamAsync(link.Url);
-            //if(downloadSongResult == null)
-            //{
-            //    serviceResult.Success = false;
-            //    serviceResult.Error.Description = "Error of download file from blob.";
-            //    serviceResult.Error.Code = ErrorStatusCode.BudRequest;
-            //    return ServiceResult(serviceResult);
-            //}
-
-            //var torrentServiceResult = await _torrentService.Create(link.Url, downloadSongResult.GetBuffer(), link.Id);
-            //if (!torrentServiceResult.Success)
-            //{
-            //    return ServiceResult(torrentServiceResult);
-            //}
-
-            //var torrentLink = new TorrentLinkModel()
-            //{
-            //    Id = System.Guid.NewGuid().ToString("N").Substring(0, 10),
-            //    OwnerId = User.Identity.GetUserId(),
-            //    Torrent = torrentServiceResult.Result
-            //};
 
             model.Id = System.Guid.NewGuid().ToString("N").Substring(0, 10);
             model.Links = new List<LinkModel>()
@@ -160,10 +129,12 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
                     return BadRequest(ModelState);
                 }
 
-                var link = new UrlLinkModel
+                var currentUser = await _userService.GetApplicationUser(User.Identity.GetUserId());
+
+                var link = new LinkModel
                 {
                     Id = result.Id,
-                    OwnerId = User.Identity.GetUserId()
+                    Owner = currentUser
                 };
                 return Ok(link);
             }

@@ -11,7 +11,6 @@ using System;
 using MusicStoreServer.Domain.Entities.Dictionaries;
 using MusicStoreServer.Domain.Interfaces;
 using MusicStoreServer.Services.Interfaces;
-using MongoDB.Driver;
 using Microsoft.AspNet.Identity.Owin;
 using System.Net;
 using System.Net.Http;

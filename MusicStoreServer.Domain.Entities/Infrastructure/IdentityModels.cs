@@ -2,15 +2,14 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
-using AspNet.Identity.MongoDB;
 using System;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace MusicStoreServer.Domain.Entities.Infrastructure
 {
-    // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser, IBaseEntity
     {
-        public string PhotoPath { get; set; }
+        public string PhotoId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime? BirthDate { get; set; }
@@ -22,5 +21,6 @@ namespace MusicStoreServer.Domain.Entities.Infrastructure
             // Add custom user claims here
             return userIdentity;
         }
+
     }
 }

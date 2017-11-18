@@ -14,7 +14,6 @@ namespace MusicStoreServer.Web
         protected void Application_Start()
         {
             DisableApplicationInsightsOnDebug();
-            EnsureAuthIndexes.Exist();
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

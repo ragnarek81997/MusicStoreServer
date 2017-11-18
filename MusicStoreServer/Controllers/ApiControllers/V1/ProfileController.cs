@@ -11,7 +11,6 @@ using System;
 using MusicStoreServer.Domain.Entities.Dictionaries;
 using MusicStoreServer.Domain.Interfaces;
 using MusicStoreServer.Services.Interfaces;
-using MongoDB.Driver;
 using Microsoft.AspNet.Identity.Owin;
 using System.Net;
 using System.Net.Http;
@@ -96,7 +95,7 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
         public async Task<IHttpActionResult> GetCurrentUser()
         {
             var userId = User.Identity.GetUserId();
-            var result = await _userService.GetCurrentUser(userId);
+            var result = await _userService.GetShortUser(userId);
             return Ok(result);
         }
 
@@ -115,7 +114,7 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
         [Route("{userId}")]
         public async Task<IHttpActionResult> GetUser(string userId)
         {
-            var result = await _userService.GetCurrentUser(userId);
+            var result = await _userService.GetShortUser(userId);
 
             return Ok(result);
         }

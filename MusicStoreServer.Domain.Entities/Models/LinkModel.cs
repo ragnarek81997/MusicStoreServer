@@ -8,15 +8,11 @@ using System.Threading.Tasks;
 
 namespace MusicStoreServer.Domain.Entities.Models
 {
-    public class PlaylistModel : BaseEntity
+    public class LinkModel : BaseEntity
     {
         [Required]
-        [StringLength(40, MinimumLength = 3)]
-        public string Name { get; set; }
-        [Required]
         public ApplicationUser Owner { get; set; }
-        [StringLength(24)]
-        public string ArtId { get; set; }
-        public ICollection<SongModel> Songs { get; set; }
+        [Required]
+        public string MimeType { get; set; }
     }
 }

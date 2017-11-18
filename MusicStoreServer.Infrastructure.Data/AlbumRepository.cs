@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MusicStoreServer.Domain.Entities.Infrastructure;
-using MongoDB.Driver;
 
 namespace MusicStoreServer.Infrastructure.Data
 {
@@ -58,13 +57,7 @@ namespace MusicStoreServer.Infrastructure.Data
 
         public async Task<DatabaseResult> Update(AlbumModel model)
         {
-            var updateDefinition = Builders<AlbumModel>.Update
-                .Set(x => x.ArtistId, model.ArtistId)
-                .Set(x => x.ArtUrl, model.ArtUrl)
-                .Set(x => x.GenreId, model.GenreId)
-                .Set(x => x.Name, model.Name);
-
-            return await base.UpdateOneAsync(model.Id, updateDefinition);
+            return await base.UpdateOneAsync(model);
         }
     }
 }

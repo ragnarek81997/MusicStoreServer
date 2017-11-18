@@ -42,8 +42,6 @@ namespace MusicStoreServer.Infrastructure.Data.Utility.AzureBlob
         {
             if (string.IsNullOrEmpty(containerName))
                 new ArgumentNullException(containerName);
-
-            this.userId = userId;
             this.containerName = containerName;
 
             // Receiving Account storage 
@@ -230,10 +228,7 @@ namespace MusicStoreServer.Infrastructure.Data.Utility.AzureBlob
             //TODO: implement enum for name container
             inputPath = inputPath.Replace($"/{containerName}/", "");
 
-            if (string.IsNullOrEmpty(userId))
-                sourcePath = sourcePath.Remove(0, 1);
-
-            sourcePath = userId + sourcePath + nameMoveFile;
+            sourcePath = sourcePath + nameMoveFile;
 
             // Get reference to existant BLOB-object 
             CloudBlockBlob blockBlobExists = container.GetBlockBlobReference(inputPath);

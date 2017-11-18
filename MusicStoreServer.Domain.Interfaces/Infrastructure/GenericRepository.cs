@@ -1,368 +1,256 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
-using MusicStoreServer.Domain.Entities.Infrastructure;
+﻿using MusicStoreServer.Domain.Entities.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MusicStoreServer.Domain.Interfaces.Infrastructure
 {
-    public abstract class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : class //IBaseEntity
+    public abstract class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : class, IBaseEntity
     {
-        private DatabaseFactory _mongoDbContext = null;
-        public GenericRepository(DatabaseFactory mongoDbContext = null)
+        private ApplicationDbContext _applicationDbContext = null;
+        public GenericRepository(ApplicationDbContext applicationDbContext = null)
         {
-            _mongoDbContext = mongoDbContext != null ? mongoDbContext : new DatabaseFactory();
+            _applicationDbContext = applicationDbContext ?? new ApplicationDbContext();
         }
-
-        private IMongoCollection<TEntity> collection
+        #region COUNT
+        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> where)
         {
-            get { return _mongoDbContext.GetCollection<TEntity>(); }
+            var dbSet = _applicationDbContext.Set<TEntity>();
+            return await dbSet.CountAsync(where);
         }
-
-        #region FIND
-
-        public virtual async Task<List<TEntity>> GetAllAsync(int limit = 50, int skip = 0)
-        {
-            var entities = await collection.Find(new BsonDocument()).Limit(limit).Skip(skip).ToListAsync();
-            return entities;
-        }
-
-        public virtual async Task<List<TResult>> GetAllAsync<TResult>(ProjectionDefinition<TEntity, TResult> projection, int limit = 50, int skip = 0)
-        {
-            var entities = await collection.Find(new BsonDocument()).Project(projection).Limit(limit).Skip(skip).ToListAsync();
-            return entities;
-        }
-
-        public virtual async Task<List<TEntity>> GetAllWithOrderDescAsync(Expression<Func<TEntity, object>> predicate, int limit = 50, int skip = 0)
-        {
-            var entities = await collection.Find(new BsonDocument()).Sort(Builders<TEntity>.Sort.Descending(predicate)).Limit(limit).Skip(skip).ToListAsync();
-            return entities;
-        }
-
-        public virtual async Task<List<TEntity>> GetAllWithOrderAscAsync(Expression<Func<TEntity, object>> predicate, int limit = 50, int skip = 0)
-        {
-            var entities = await collection.Find(new BsonDocument()).Sort(Builders<TEntity>.Sort.Ascending(predicate)).Limit(limit).Skip(skip).ToListAsync();
-            return entities;
-        }
-
-        public virtual async Task<List<TResult>> GetAllWithOrderDescAsync<TResult>(Expression<Func<TEntity, object>> predicate, ProjectionDefinition<TEntity, TResult> projection, int limit = 50, int skip = 0)
-        {
-            var entities = await collection.Find(new BsonDocument()).Project(projection).Sort(Builders<TEntity>.Sort.Descending(predicate)).Limit(limit).Skip(skip).ToListAsync();
-            return entities;
-        }
-
-        public virtual async Task<List<TResult>> GetAllWithOrderAscAsync<TResult>(Expression<Func<TEntity, object>> predicate, ProjectionDefinition<TEntity, TResult> projection, int limit = 50, int skip = 0)
-        {
-            var entities = await collection.Find(new BsonDocument()).Project(projection).Sort(Builders<TEntity>.Sort.Ascending(predicate)).Limit(limit).Skip(skip).ToListAsync();
-            return entities;
-        }
-
-        public virtual async Task<TEntity> FindOneAndUpdateAsync(FilterDefinition<TEntity> filter, UpdateDefinition<TEntity> updateDefinition, FindOneAndUpdateOptions<TEntity, TEntity> options)
-        {
-            var entity = await collection.FindOneAndUpdateAsync(filter, updateDefinition, options);
-            return entity;
-        }
-
-        public virtual async Task<List<TEntity>> FindManyAsync(Expression<Func<TEntity, bool>> predicate, int limit = 50, int skip = 0)
-        {
-            var entities = await collection.Find(predicate).Limit(limit).Skip(skip).ToListAsync();
-            return entities;
-        }
-
-        public virtual async Task<List<TEntity>> FindManyAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> order, int limit = 50, int skip = 0, bool asc = true)
-        {
-            var entities = asc ? await collection.Find(predicate).Sort(Builders<TEntity>.Sort.Ascending(order)).Limit(limit).Skip(skip).ToListAsync() : await collection.Find(predicate).Sort(Builders<TEntity>.Sort.Descending(order)).Limit(limit).Skip(skip).ToListAsync();
-            return entities;
-        }
-
-        public virtual async Task<List<TResult>> FindManyAsync<TResult>(Expression<Func<TEntity, bool>> predicate, ProjectionDefinition<TEntity, TResult> projection, int limit = 50, int skip = 0)
-        {
-            var entities = await collection.Find(predicate).Project(projection).Limit(limit).Skip(skip).ToListAsync();
-            return entities;
-        }
-
-        public virtual async Task<List<TResult>> FindManyDistinctAsync<TResult>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TResult>> field, int limit = 50, int skip = 0)
-        {
-            var entities = await collection.Distinct(field, predicate).ToListAsync();
-
-            return entities;
-        }
-
-        public virtual async Task<List<TResult>> FindManyOrderDescAsync<TResult>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> order, ProjectionDefinition<TEntity, TResult> projection, int limit = 50, int skip = 0)
-        {
-            var entities = await collection.Find(predicate).Project(projection).Sort(Builders<TEntity>.Sort.Descending(order)).Limit(limit).Skip(skip).ToListAsync();
-            return entities;
-        }
-
-        public virtual async Task<List<TResult>> FindManyOrderAscAsync<TResult>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> order, ProjectionDefinition<TEntity, TResult> projection, int limit = 50, int skip = 0)
-        {
-            var entities = await collection.Find(predicate).Project(projection).Sort(Builders<TEntity>.Sort.Ascending(order)).Limit(limit).Skip(skip).ToListAsync();
-            return entities;
-        }
-
-        public virtual async Task<List<TEntity>> FindManyWithOrderDescAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> order, int limit = 50, int skip = 0)
-        {
-            var entities = await collection.Find(predicate).Sort(Builders<TEntity>.Sort.Descending(order)).Limit(limit).Skip(skip).ToListAsync();
-            return entities;
-        }
-
-        public virtual async Task<List<TEntity>> FindManyWithOrderAscAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> order, int limit = 50, int skip = 0)
-        {
-            var entities = await collection.Find(predicate).Sort(Builders<TEntity>.Sort.Ascending(order)).Limit(limit).Skip(skip).ToListAsync();
-            return entities;
-        }
-
-        public virtual async Task<List<TEntity>> FindManyWithMultiOrderAscAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> predicateSort, Expression<Func<TEntity, object>> predicateSortSecondary, int limit = 50, int skip = 0)
-        {
-            var entities = await collection.Find(predicate).Sort(Builders<TEntity>.Sort.Ascending(predicateSort).Ascending(predicateSortSecondary)).Limit(limit).Skip(skip).ToListAsync();
-            return entities;
-        }
-
-        public virtual async Task<List<TResult>> FindManyWithMultiOrderAscAsync<TResult>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> predicateSort, Expression<Func<TEntity, object>> predicateSortSecondary, ProjectionDefinition<TEntity, TResult> projection, int limit = 50, int skip = 0)
-        {
-            var entities = await collection.Find(predicate).Sort(Builders<TEntity>.Sort.Ascending(predicateSort).Ascending(predicateSortSecondary)).Project(projection).Limit(limit).Skip(skip).ToListAsync();
-            return entities;
-        }
-
-        public virtual async Task<TEntity> FindOneAsync(string id)
-        {
-            var entity = await collection.Find(new BsonDocument("_id", new ObjectId(id))).SingleOrDefaultAsync();
-            return entity;
-        }
-
-        public virtual async Task<TResult> FindOneAsync<TResult>(string id, ProjectionDefinition<TEntity, TResult> projection)
-        {
-            var entity = await collection.Find(new BsonDocument("_id", new ObjectId(id))).Project(projection).SingleOrDefaultAsync();
-            return entity;
-        }
-
-        public virtual async Task<TEntity> FindOneAsync(Expression<Func<TEntity, bool>> predicate)
-        {
-            var entity = await collection.Find(predicate).SingleOrDefaultAsync();
-            return entity;
-        }
-
-        public virtual async Task<TResult> FindOneAsync<TResult>(Expression<Func<TEntity, bool>> predicate, ProjectionDefinition<TEntity, TResult> projection)
-        {
-            var entity = await collection.Find(predicate).Project(projection).SingleOrDefaultAsync();
-            return entity;
-        }
-
-        public virtual async Task<TEntity> FindOneAsync(FilterDefinition<TEntity> filter)
-        {
-            var entity = await collection.Find(filter).SingleOrDefaultAsync();
-            return entity;
-        }
-
-        public virtual async Task<TEntity> FindOneAsync(FilterDefinition<TEntity> filter, ProjectionDefinition<TEntity, TEntity> projection)
-        {
-            var entity = await collection.Find(filter).Project(projection).SingleOrDefaultAsync();
-            return entity;
-        }
-
-        public virtual async Task<bool> ExistsAsync(string id)
-        {
-            var entity = await collection.Find(new BsonDocument("_id", new ObjectId(id)))
-                 .Project(new ProjectionDefinitionBuilder<TEntity>().Include("_id"))
-                 .SingleOrDefaultAsync();
-            return !entity.IsBsonNull;
-        }
-
-        #endregion
-
-        #region INSERT
-
-        public virtual async Task<DatabaseResult> InsertOneAsync(TEntity entity)
-        {
-            var dbResult = new DatabaseResult();
-
-            try
-            {
-                await collection.InsertOneAsync(entity);
-                dbResult.Success = true;
-                return dbResult;
-            }
-            catch (Exception ex)
-            {
-                dbResult.Message = "Exception InsertOneAsync " + typeof(TEntity).Name;
-                dbResult.Exception = ex;
-                return dbResult;
-            }
-        }
-
-        public virtual async Task<DatabaseResult> InsertManyAsync(List<TEntity> entities)
-        {
-            var dbResult = new DatabaseResult();
-
-            try
-            {
-                await collection.InsertManyAsync(entities);
-                dbResult.Success = true;
-                return dbResult;
-            }
-            catch (Exception ex)
-            {
-                dbResult.Message = "Exception InsertManyAsync " + typeof(TEntity).Name;
-                dbResult.Exception = ex;
-                return dbResult;
-            }
-        }
-
         #endregion
 
         #region DELETE
-
-        public virtual async Task<DatabaseResult> DeleteOneAsync(Expression<Func<TEntity, bool>> predicate)
+        public async Task<DatabaseResult> DeleteManyAsync(Expression<Func<TEntity, bool>> predicate)
         {
             var dbResult = new DatabaseResult();
 
             try
             {
-                var res = await collection.DeleteOneAsync(predicate);
-                if (res.DeletedCount < 1)
-                {
-                    dbResult.Message = "ERROR: DeletedCount < 1 for entity: " + typeof(TEntity).Name;
-                    return dbResult;
-                }
+                var dbSet = _applicationDbContext.Set<TEntity>();
+
+                IEnumerable<TEntity> objects = dbSet.Where<TEntity>(predicate).AsEnumerable();
+
+                foreach (TEntity obj in objects)
+                    dbSet.Remove(obj);
+
+                await _applicationDbContext.SaveChangesAsync();
 
                 dbResult.Success = true;
                 return dbResult;
             }
             catch (Exception ex)
             {
-                dbResult.Message = "Exception DeleteOneAsync " + typeof(TEntity).Name;
                 dbResult.Exception = ex;
+                dbResult.Message = "Exception DeleteManyAsync " + typeof(TEntity).Name;
                 return dbResult;
             }
         }
-        public virtual async Task<DatabaseResult> DeleteManyAsync(Expression<Func<TEntity, bool>> predicate)
+
+        public async Task<DatabaseResult> DeleteOneAsync(Expression<Func<TEntity, bool>> predicate)
         {
             var dbResult = new DatabaseResult();
+
             try
             {
-                var res = await collection.DeleteManyAsync(predicate);
-                if (res.DeletedCount < 1)
+                var dbSet = _applicationDbContext.Set<TEntity>();
+
+                IEnumerable<TEntity> objects = dbSet.Where<TEntity>(predicate).AsEnumerable();
+
+                foreach (TEntity obj in objects)
                 {
-                    dbResult.Message = "Some " + typeof(TEntity).Name + "s could not be deleted.";
-                    return dbResult;
+                    dbSet.Remove(obj);
+                    break;
                 }
+
+                await _applicationDbContext.SaveChangesAsync();
+
                 dbResult.Success = true;
                 return dbResult;
             }
             catch (Exception ex)
             {
-                dbResult.Message = "Some " + typeof(TEntity).Name + "s could not be deleted.";
                 dbResult.Exception = ex;
+                dbResult.Message = "Exception DeleteManyAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
+        }
+        #endregion
+
+        #region FIND_MANY
+        public async Task<List<TEntity>> FindManyAsync(Expression<Func<TEntity, bool>> predicate, int limit = 50, int skip = 0)
+        {
+            var dbSet = _applicationDbContext.Set<TEntity>();
+            return await dbSet.Where(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+        }
+        public async Task<List<TEntity>> FindManyAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null, int limit = 50, int skip = 0)
+        {
+            var dbSet = _applicationDbContext.Set<TEntity>();
+            var dbQuery = dbSet.Include(include);
+
+            dbQuery = (include2 != null) ? dbQuery.Include(include2) : dbQuery;
+            dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
+            dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
+
+            return await dbQuery.Where(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+        }
+        #endregion
+
+        #region FIND_ONE
+        public async Task<TEntity> FindOneAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            var dbSet = _applicationDbContext.Set<TEntity>();
+            return await dbSet.FirstOrDefaultAsync(predicate);
+        }
+        public async Task<TEntity> FindOneAsync(string id)
+        {
+            var dbSet = _applicationDbContext.Set<TEntity>();
+            return await dbSet.FindAsync(id);
+        }
+        public async Task<TEntity> FindOneAsync(string id, Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null)
+        {
+            return await FindOneAsync((entity)=> entity.Id == id, include, include2, include3, include4);
+        }
+        public async Task<TEntity> FindOneAsync(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null)
+        {
+            var dbSet = _applicationDbContext.Set<TEntity>();
+            var dbQuery = dbSet.Include(include);
+
+            dbQuery = (include2 != null) ? dbQuery.Include(include2) : dbQuery;
+            dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
+            dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
+
+            return await dbQuery.FirstOrDefaultAsync(where);
+        }
+        #endregion
+
+        #region GET_ALL
+        public async Task<List<TEntity>> GetAllAsync(int limit = 50, int skip = 0)
+        {
+            var dbSet = _applicationDbContext.Set<TEntity>();
+            return await dbSet.Skip(skip).Take(limit).ToListAsync<TEntity>();
+        }
+
+        public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null, int limit = 50, int skip = 0)
+        {
+            var dbSet = _applicationDbContext.Set<TEntity>();
+
+            var dbQuery = dbSet.Include(include);
+            dbQuery = (include2 != null) ? dbQuery.Include(include2) : dbQuery;
+            dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
+            dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
+
+            return await dbQuery.Skip(skip).Take(limit).ToListAsync<TEntity>();
+        }
+
+        public async Task<List<TEntity>> GetAllWithOrderAscAsync(Expression<Func<TEntity, object>> predicate, int limit = 50, int skip = 0)
+        {
+            var dbSet = _applicationDbContext.Set<TEntity>();
+            return await dbSet.OrderBy(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+        }
+
+        public async Task<List<TEntity>> GetAllWithOrderAscAsync(Expression<Func<TEntity, object>> predicate, Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null, int limit = 50, int skip = 0)
+        {
+            var dbSet = _applicationDbContext.Set<TEntity>();
+            var dbQuery = dbSet.Include(include);
+
+            dbQuery = (include2 != null) ? dbQuery.Include(include2) : dbQuery;
+            dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
+            dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
+
+            return await dbQuery.OrderBy(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+        }
+
+
+        public async Task<List<TEntity>> GetAllWithOrderDescAsync(Expression<Func<TEntity, object>> predicate, int limit = 50, int skip = 0)
+        {
+            var dbSet = _applicationDbContext.Set<TEntity>();
+            return await dbSet.OrderByDescending(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+        }
+
+        public async Task<List<TEntity>> GetAllWithOrderDescAsync(Expression<Func<TEntity, object>> predicate, Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null, int limit = 50, int skip = 0)
+        {
+            var dbSet = _applicationDbContext.Set<TEntity>();
+            var dbQuery = dbSet.Include(include);
+
+            dbQuery = (include2 != null) ? dbQuery.Include(include2) : dbQuery;
+            dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
+            dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
+
+            return await dbQuery.OrderByDescending(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+        }
+        #endregion
+
+        #region INSERT
+        public async Task<DatabaseResult> InsertManyAsync(List<TEntity> entities)
+        {
+            var dbResult = new DatabaseResult();
+
+            try
+            {
+                _applicationDbContext.Set<TEntity>().AddRange(entities);
+
+                await _applicationDbContext.SaveChangesAsync();
+
+                dbResult.Success = true;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception InsertManyAsync " + typeof(TEntity).Name;
                 return dbResult;
             }
         }
 
+        public async Task<DatabaseResult> InsertOneAsync(TEntity entity)
+        {
+            var dbResult = new DatabaseResult();
+
+            try
+            {
+                _applicationDbContext.Set<TEntity>().Add(entity);
+
+                await _applicationDbContext.SaveChangesAsync();
+
+                dbResult.Success = true;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception InsertOneAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
+        }
         #endregion
 
         #region UPDATE
-
-        public virtual async Task<DatabaseResult> UpdateOneAsync(string id, UpdateDefinition<TEntity> entity)
+        public async Task<DatabaseResult> UpdateOneAsync(TEntity entity)
         {
             var dbResult = new DatabaseResult();
+
             try
             {
-                var updateRes = await collection.UpdateOneAsync(new BsonDocument("_id", new ObjectId(id)), entity);
-
-                if (updateRes.ModifiedCount < 1)
-                {
-                    dbResult.Message = "ERROR: updateRes.ModifiedCount < 1 for entity: " + typeof(TEntity).Name;
-                    return dbResult;
-                }
+                var dbSet = _applicationDbContext.Set<TEntity>();
+                dbSet.Attach(entity);
+                _applicationDbContext.Entry(entity).State = EntityState.Modified;
+                await _applicationDbContext.SaveChangesAsync();
 
                 dbResult.Success = true;
                 return dbResult;
             }
             catch (Exception ex)
             {
-                dbResult.Message = "Exception updating entity: " + typeof(TEntity).Name;
                 dbResult.Exception = ex;
+                dbResult.Message = "Exception UpdateOneAsync " + typeof(TEntity).Name;
                 return dbResult;
             }
         }
-
-        public virtual async Task<DatabaseResult> UpdateManyAsync(Expression<Func<TEntity, bool>> predicate, UpdateDefinition<TEntity> entity)
-        {
-            var dbResult = new DatabaseResult();
-            try
-            {
-                var updateRes = await collection.UpdateManyAsync(predicate, entity);
-
-                if (updateRes.ModifiedCount < 1)
-                {
-                    dbResult.Message = "ERROR: updateRes.ModifiedCount < 1 for entity: " + typeof(TEntity).Name;
-                    return dbResult;
-                }
-
-                dbResult.Success = true;
-                return dbResult;
-            }
-            catch (Exception ex)
-            {
-                dbResult.Message = "Exception updating entity: " + typeof(TEntity).Name;
-                dbResult.Exception = ex;
-                return dbResult;
-            }
-        }
-
-        public virtual async Task<DatabaseResult> ReplaceOneAsync(string id, TEntity entity)
-        {
-            var dbResult = new DatabaseResult();
-            try
-            {
-                var updateRes = await collection.ReplaceOneAsync(new BsonDocument("_id", new ObjectId(id)), entity);
-                if (updateRes.MatchedCount < 1)
-                {
-                    dbResult.Type = Entities.Enums.DatabaseResultType.NotMatch;
-                    dbResult.Message = "ERROR: updateRes.ModifiedCount < 1 for entity: " + typeof(TEntity).Name;
-                    dbResult.Success = false;
-                }
-                else if (updateRes.MatchedCount > 0 && updateRes.ModifiedCount != updateRes.MatchedCount)
-                {
-                    dbResult.Type = Entities.Enums.DatabaseResultType.NotModified;
-                    dbResult.Success = false;
-                }
-                else
-                {
-                    dbResult.Success = true;
-                }
-
-                return dbResult;
-            }
-            catch (Exception ex)
-            {
-                dbResult.Message = "Exception updating entity: " + typeof(TEntity).Name;
-                dbResult.Exception = ex;
-                return dbResult;
-            }
-        }
-
         #endregion
-
-        #region  COUNT
-
-        public virtual async Task<long> CountAsync()
-        {
-            var entity = await collection.CountAsync(new BsonDocument());
-            return entity;
-        }
-
-        public virtual async Task<long> CountByPatternAsync(Expression<Func<TEntity, bool>> predicate)
-        {
-            var result = await collection.Find(predicate).CountAsync();
-            return result;
-        }
-
-        #endregion
-
-        //And more more more ...
-
     }
 }

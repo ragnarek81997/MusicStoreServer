@@ -6,42 +6,44 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNet.Identity;
-using AspNet.Identity.MongoDB;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using System.Net.Mail;
 using System.Configuration;
 using MusicStoreServer.Domain.Entities.Infrastructure;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace MusicStoreServer.Domain.Entities.Infrastructure
 {
-    //public class EmailService : IIdentityMessageService
-    //{
-    //    public Task SendAsync(IdentityMessage message)
-    //    {
-    //        // настройки smtp-сервера, с которого мы и будем отправлять письмо
-    //        SmtpClient smtp = new System.Net.Mail.SmtpClient("smtp.gmail.com", 25);
-    //        smtp.EnableSsl = true;
-    //        smtp.Credentials = new System.Net.NetworkCredential(ConfigurationManager.AppSettings["SmtpUsername"], ConfigurationManager.AppSettings["SmtpPassword"]);
+    public class EmailService : IIdentityMessageService
+    {
+        private readonly string _mailAccountStmp = ConfigurationManager.AppSettings["mailAccountStmp"];
+        private readonly string _mailPasswordStmp = ConfigurationManager.AppSettings["mailPasswordStmp"];
+        private readonly string _mailDisplayName = ConfigurationManager.AppSettings["mailDisplayName"];
 
-    //        // наш email с заголовком письма
-    //        MailAddress from = new MailAddress("noreplay.dev.startupsoft@gmail.com", "MusicStoreServer no-replay");
-    //        // кому отправляем
-    //        MailAddress to = new MailAddress(message.Destination);
-    //        // создаем объект сообщения
-    //        MailMessage m = new MailMessage(from, to);
-    //        // тема письма
-    //        m.Subject = message.Subject;
-    //        // текст письма
-    //        m.Body = message.Body;
-    //        m.BodyEncoding = System.Text.Encoding.UTF8;
-    //        m.IsBodyHtml = true;
-    //        return smtp.SendMailAsync(m);
-    //        // Plug in your email service here to send an email.
-    //        //return Task.FromResult(0);
-    //    }
-    //}
+        public Task SendAsync(IdentityMessage message)
+        {
+            var smtp = new SmtpClient("smtp.gmail.com", 587)
+            {
+                EnableSsl = true,
+                Credentials = new System.Net.NetworkCredential(_mailAccountStmp, _mailPasswordStmp)
+            };
+
+            var from = new MailAddress(_mailAccountStmp, _mailDisplayName);
+            var to = new MailAddress(message.Destination);
+
+            var mes = new MailMessage(from, to)
+            {
+                Subject = message.Subject,
+                Body = message.Body,
+                BodyEncoding = System.Text.Encoding.UTF8,
+                IsBodyHtml = true
+            };
+
+            return smtp.SendMailAsync(mes);
+        }
+    }
 
     public class SmsService : IIdentityMessageService
     {
@@ -62,7 +64,7 @@ namespace MusicStoreServer.Domain.Entities.Infrastructure
 
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
         {
-            var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationIdentityContext>().ApplicationUsers));
+            var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationDbContext>()));
             // Configure validation logic for usernames
             manager.UserValidator = new UserValidator<ApplicationUser>(manager)
             {
@@ -74,10 +76,10 @@ namespace MusicStoreServer.Domain.Entities.Infrastructure
             manager.PasswordValidator = new PasswordValidator
             {
                 RequiredLength = 6,
-                RequireNonLetterOrDigit = false,
-                RequireDigit = false,
-                RequireLowercase = false,
-                RequireUppercase = false,
+                RequireNonLetterOrDigit = true,
+                RequireDigit = true,
+                RequireLowercase = true,
+                RequireUppercase = true,
             };
 
             // Configure user lockout defaults
@@ -96,7 +98,7 @@ namespace MusicStoreServer.Domain.Entities.Infrastructure
                 Subject = "Security Code",
                 BodyFormat = "Your security code is {0}"
             });
-            //manager.EmailService = new EmailService();
+            manager.EmailService = new EmailService();
             manager.SmsService = new SmsService();
             var dataProtectionProvider = options.DataProtectionProvider;
             if (dataProtectionProvider != null)
@@ -107,94 +109,4 @@ namespace MusicStoreServer.Domain.Entities.Infrastructure
             return manager;
         }
     }
-
-        /// <summary>
-        /// Method to add user to multiple roles
-        /// </summary>
-        /// <param name="userId">user id</param>
-        /// <param name="roles">list of role names</param>
-        /// <returns></returns>
-    //    public virtual async Task<IdentityResult> AddUserToRolesAsync(string userId, IList<string> roles)
-    //    {
-    //        var userRoleStore = (IUserRoleStore<ApplicationUser, string>)Store;
-
-    //        var user = await FindByIdAsync(userId).ConfigureAwait(false);
-    //        if (user == null)
-    //        {
-    //            throw new InvalidOperationException("Invalid user Id");
-    //        }
-
-    //        var userRoles = await userRoleStore.GetRolesAsync(user).ConfigureAwait(false);
-    //        // Add user to each role using UserRoleStore
-    //        foreach (var role in roles.Where(role => !userRoles.Contains(role)))
-    //        {
-    //            await userRoleStore.AddToRoleAsync(user, role).ConfigureAwait(false);
-    //        }
-
-    //        // Call update once when all roles are added
-    //        return await UpdateAsync(user).ConfigureAwait(false);
-    //    }
-
-    //    /// <summary>
-    //    /// Remove user from multiple roles
-    //    /// </summary>
-    //    /// <param name="userId">user id</param>
-    //    /// <param name="roles">list of role names</param>
-    //    /// <returns></returns>
-    //    public virtual async Task<IdentityResult> RemoveUserFromRolesAsync(string userId, IList<string> roles)
-    //    {
-    //        var userRoleStore = (IUserRoleStore<ApplicationUser, string>)Store;
-
-    //        var user = await FindByIdAsync(userId).ConfigureAwait(false);
-    //        if (user == null)
-    //        {
-    //            throw new InvalidOperationException("Invalid user Id");
-    //        }
-
-    //        var userRoles = await userRoleStore.GetRolesAsync(user).ConfigureAwait(false);
-    //        // Remove user to each role using UserRoleStore
-    //        foreach (var role in roles.Where(userRoles.Contains))
-    //        {
-    //            await userRoleStore.RemoveFromRoleAsync(user, role).ConfigureAwait(false);
-    //        }
-
-    //        // Call update once when all roles are removed
-    //        return await UpdateAsync(user).ConfigureAwait(false);
-    //    }
-    //}
-
-    //public class ApplicationRoleManager : RoleManager<IdentityRole>
-    //{
-    //    public ApplicationRoleManager(IRoleStore<IdentityRole, string> roleStore)
-    //        : base(roleStore)
-    //    {
-    //    }
-
-    //    public static ApplicationRoleManager Create(IdentityFactoryOptions<ApplicationRoleManager> options, IOwinContext context)
-    //    {
-
-    //        var manager = new ApplicationRoleManager(new RoleStore<IdentityRole>(context.Get<ApplicationIdentityContext>().IdentityRoles));
-
-    //        return manager;
-    //    }
-    //}
-
-    // Configure the application sign-in manager which is used in this application.
-    //public class ApplicationSignInManager : SignInManager<ApplicationUser, string>
-    //{
-    //    public ApplicationSignInManager(ApplicationUserManager userManager, IAuthenticationManager authenticationManager)
-    //        : base(userManager, authenticationManager)
-    //    {
-    //    }
-
-    //    public override Task<ClaimsIdentity> CreateUserIdentityAsync(ApplicationUser user)
-    //    {
-    //        return user.GenerateUserIdentityAsync((ApplicationUserManager)UserManager);
-    //    }
-
-    //    public static ApplicationSignInManager Create(IdentityFactoryOptions<ApplicationSignInManager> options, IOwinContext context)
-    //    {
-    //        return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
-    //    }
-    //}
 }

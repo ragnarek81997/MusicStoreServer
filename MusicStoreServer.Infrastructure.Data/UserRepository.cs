@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using MusicStoreServer.Domain.Entities.Infrastructure;
 using MusicStoreServer.Domain.Entities.ViewModels;
-using MongoDB.Driver;
 using Microsoft.AspNet.Identity;
 using MusicStoreServer.Domain.Entities.Enums;
 
@@ -16,20 +15,23 @@ namespace MusicStoreServer.Infrastructure.Data
 {
     public class UserRepository : GenericRepository<ApplicationUser>, IUserRepository
     {
-        private readonly ProjectionDefinition<ApplicationUser, ShortUser> ShortUserProjection = Builders<ApplicationUser>.Projection.Expression(x => new ShortUser()
+        public async Task<ApplicationUser> GetApplicationUser(string userId)
         {
-            Id = x.Id,
-            Email = x.Email,
-            FirstName = x.FirstName,
-            LastName = x.LastName,
-            PhotoPath = x.PhotoPath
-        });
-
-        public async Task<ShortUser> GetCurrentUser(string userId)
-        {
-            return await base.FindOneAsync(userId, ShortUserProjection);
+            return await base.FindOneAsync(userId);
         }
 
-
+        public async Task<ShortUser> GetShortUser(string userId)
+        {
+            var resultObject = await this.GetApplicationUser(userId);
+            var userObject = new ShortUser()
+            {
+                Id = resultObject.Id,
+                Email = resultObject.Email,
+                FirstName = resultObject.FirstName,
+                LastName = resultObject.LastName,
+                PhotoId = resultObject.PhotoId
+            };
+            return userObject;
+        }
     }
 }

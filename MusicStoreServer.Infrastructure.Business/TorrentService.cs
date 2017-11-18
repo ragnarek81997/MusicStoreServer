@@ -1,5 +1,4 @@
-﻿using MongoDB.Driver;
-using MusicStoreServer.Domain.Entities.Models;
+﻿using MusicStoreServer.Domain.Entities.Models;
 using MusicStoreServer.Domain.Interfaces;
 using MusicStoreServer.Services.Interfaces;
 using System.Threading.Tasks;
@@ -15,7 +14,6 @@ using System.Web.Http;
 using MusicStoreServer.Infrastructure.Data.Utility.AzureBlob;
 using MusicStoreServer.Domain.Entities.Dictionaries;
 using System.Linq;
-using AspNet.Identity.MongoDB;
 using System.Collections.Generic;
 using System.Net;
 using System.Security.Cryptography;

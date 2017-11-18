@@ -106,8 +106,8 @@ namespace MusicStoreServer.Web.Providers
                 { "birthDate", user.BirthDate?.ToString("R") }
             };
 
-            if(!string.IsNullOrWhiteSpace(user.PhotoPath))
-                data.Add("photoPath", user.PhotoPath);
+            if(!string.IsNullOrWhiteSpace(user.PhotoId))
+                data.Add("photoId", user.PhotoId);
 
             return new AuthenticationProperties(data);
         }

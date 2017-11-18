@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
-using MongoDB.Driver;
 using Owin;
 using Swashbuckle.Application;
 using System;
