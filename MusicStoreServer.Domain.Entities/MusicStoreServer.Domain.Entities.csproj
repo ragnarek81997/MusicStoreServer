@@ -98,6 +98,11 @@
     <Compile Include="Infrastructure\IBaseEntity.cs" />
     <Compile Include="Infrastructure\IdentityConfig.cs" />
     <Compile Include="Infrastructure\IdentityModels.cs" />
+    <Compile Include="Migrations\201711182218052_FirstMigration.cs" />
+    <Compile Include="Migrations\201711182218052_FirstMigration.Designer.cs">
+      <DependentUpon>201711182218052_FirstMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AlbumModel.cs" />
     <Compile Include="Models\ArtistModel.cs" />
     <Compile Include="Models\GenreModel.cs" />
@@ -115,7 +120,11 @@
     <Compile Include="ViewModels\AccountViewModels.cs" />
     <Compile Include="ViewModels\ShortUser.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201711182218052_FirstMigration.resx">
+      <DependentUpon>201711182218052_FirstMigration.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
