@@ -102,6 +102,10 @@
     <Compile Include="Migrations\201711182218052_FirstMigration.Designer.cs">
       <DependentUpon>201711182218052_FirstMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711191713515_SecondMigration.cs" />
+    <Compile Include="Migrations\201711191713515_SecondMigration.Designer.cs">
+      <DependentUpon>201711191713515_SecondMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AlbumModel.cs" />
     <Compile Include="Models\ArtistModel.cs" />
@@ -123,6 +127,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201711182218052_FirstMigration.resx">
       <DependentUpon>201711182218052_FirstMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711191713515_SecondMigration.resx">
+      <DependentUpon>201711191713515_SecondMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -13,7 +13,7 @@ namespace MusicStoreServer.Domain.Entities.Models
         [Required]
         [StringLength(40, MinimumLength = 3)]
         public string Name { get; set; }
-        [StringLength(24)]
+        [StringLength(24, MinimumLength = 24)]
         public string ArtId { get; set; }
 
         [Required]

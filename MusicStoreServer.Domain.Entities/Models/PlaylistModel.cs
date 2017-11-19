@@ -15,7 +15,7 @@ namespace MusicStoreServer.Domain.Entities.Models
         public string Name { get; set; }
         [Required]
         public ApplicationUser Owner { get; set; }
-        [StringLength(24)]
+        [StringLength(24, MinimumLength = 24)]
         public string ArtId { get; set; }
         public ICollection<SongModel> Songs { get; set; }
     }

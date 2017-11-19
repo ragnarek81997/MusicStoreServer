@@ -10,6 +10,7 @@ namespace MusicStoreServer.Domain.Entities.Infrastructure
     public interface IBaseEntity
     {
         [Key]
+        [StringLength(24, MinimumLength = 24)]
         string Id { get; set; }
     }
 }
