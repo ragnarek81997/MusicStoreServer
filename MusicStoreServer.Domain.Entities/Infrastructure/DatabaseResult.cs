@@ -24,6 +24,11 @@ namespace MusicStoreServer.Domain.Entities.Infrastructure
 
     }
 
+    public class DatabaseResult<TEntity> : DatabaseResult
+    {
+        public TEntity Entity { get; set; }
+    }
+
     public class DatabaseOneResult<TEntity> : DatabaseResult where TEntity : IBaseEntity
     {
         public TEntity Entity { get; set; }

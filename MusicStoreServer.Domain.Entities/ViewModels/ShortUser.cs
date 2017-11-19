@@ -1,11 +1,11 @@
-﻿using System;
+﻿using MusicStoreServer.Domain.Entities.Infrastructure;
+using System;
 using System.Collections.Generic;
 
 namespace MusicStoreServer.Domain.Entities.ViewModels
 {
-    public class ShortUser
+    public class ShortUser: BaseEntity
     {
-        public string Id { get; set; }
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

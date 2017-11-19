@@ -8,10 +8,23 @@ namespace MusicStoreServer.Domain.Entities.Dictionaries
 {
     public static class UploadSongProperties
     {
-        public static string SongsFolder => Folders["SongsFolder"];
         public static string TemporaryFolder => Folders["TemporaryFolder"];
         public static string BlobAdress => BlobUrl["BlobAdress"];
-        public static string FileType => Types["FileType"];
+
+        public static string MP3MimeType => "audio/mp3";
+
+        public static string GetType(string mimeType)
+        {
+            var result = string.Empty;
+            try
+            {
+                result = Types[mimeType];
+            }
+            catch (Exception)
+            {
+            }
+            return result;
+        }
 
         private static readonly Dictionary<string, string> BlobUrl = new Dictionary<string, string>()
         {
@@ -21,13 +34,12 @@ namespace MusicStoreServer.Domain.Entities.Dictionaries
 
         private static readonly Dictionary<string, string> Folders = new Dictionary<string, string>()
         {
-            {"SongsFolder", "songs/" },
             {"TemporaryFolder", "temporary/" }
         };
 
         private static readonly Dictionary<string, string> Types = new Dictionary<string, string>()
         {
-            {"FileType", ".mp3" }
+            { MP3MimeType, ".mp3" }
         };
     }
 }

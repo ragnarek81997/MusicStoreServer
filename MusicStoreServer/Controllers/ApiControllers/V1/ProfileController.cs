@@ -45,43 +45,43 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
         #endregion
 
 
-        // POST api/Profile/upload/photo
-        /// <remarks>
-        ///     <para>
-        ///       attach photo to you request
-        ///     </para>
-        /// </remarks>
-        [HttpPost]
-        [Route("upload/photo")]
-        public async Task<IHttpActionResult> UploadPhoto(bool saveToTemporary = true)
-        {
-            var file = HttpContext.Current.Request.Files.Count > 0 ? HttpContext.Current.Request.Files[0] : null;
-            string path = string.Empty;
+        //// POST api/Profile/upload/photo
+        ///// <remarks>
+        /////     <para>
+        /////       attach photo to you request
+        /////     </para>
+        ///// </remarks>
+        //[HttpPost]
+        //[Route("upload/photo")]
+        //public async Task<IHttpActionResult> UploadPhoto(bool saveToTemporary = true)
+        //{
+        //    var file = HttpContext.Current.Request.Files.Count > 0 ? HttpContext.Current.Request.Files[0] : null;
+        //    string path = string.Empty;
 
-            string userId = User.Identity.GetUserId();
-            UploadImage uploadImage = new UploadImage(userId);
-            if (file != null)
-            {
-                if (!saveToTemporary)
-                    path = UploadImageProperties.ImageUserFolder;
+        //    string userId = User.Identity.GetUserId();
+        //    UploadImage uploadImage = new UploadImage(userId);
+        //    if (file != null)
+        //    {
+        //        if (!saveToTemporary)
+        //            path = UploadImageProperties.ImageUserFolder;
 
-                UploadImageResult result = await uploadImage.ImageCropAndResize(file, w: UploadImageProperties.ImageSmallResize, h: UploadImageProperties.ImageSmallResize, path: path);
+        //        UploadImageResult result = await uploadImage.ImageCropAndResize(file, w: UploadImageProperties.ImageSmallResize, h: UploadImageProperties.ImageSmallResize, path: path);
 
-                if (!String.IsNullOrEmpty(result.Error))
-                {
-                    ModelState.AddModelError("Upload", result.Error);
-                    return BadRequest(ModelState);
-                }
+        //        if (!String.IsNullOrEmpty(result.Error))
+        //        {
+        //            ModelState.AddModelError("Upload", result.Error);
+        //            return BadRequest(ModelState);
+        //        }
 
-                var adress = UploadImageProperties.BlobAdress + result.PathFile;
-                return Ok(adress);
-            }
-            else
-            {
-                ModelState.AddModelError("FileError", "File was not received by the server");
-                return BadRequest(ModelState);
-            }
-        }
+        //        var adress = UploadImageProperties.BlobAdress + result.PathFile;
+        //        return Ok(adress);
+        //    }
+        //    else
+        //    {
+        //        ModelState.AddModelError("FileError", "File was not received by the server");
+        //        return BadRequest(ModelState);
+        //    }
+        //}
 
 
         // POST api/Profile/me

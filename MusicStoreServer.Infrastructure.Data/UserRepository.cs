@@ -15,23 +15,9 @@ namespace MusicStoreServer.Infrastructure.Data
 {
     public class UserRepository : GenericRepository<ApplicationUser>, IUserRepository
     {
-        public async Task<ApplicationUser> GetApplicationUser(string userId)
+        public async Task<DatabaseOneResult<ApplicationUser>> Get(string id)
         {
-            return await base.FindOneAsync(userId);
-        }
-
-        public async Task<ShortUser> GetShortUser(string userId)
-        {
-            var resultObject = await this.GetApplicationUser(userId);
-            var userObject = new ShortUser()
-            {
-                Id = resultObject.Id,
-                Email = resultObject.Email,
-                FirstName = resultObject.FirstName,
-                LastName = resultObject.LastName,
-                PhotoId = resultObject.PhotoId
-            };
-            return userObject;
+            return await base.FindOneAsync(id);
         }
     }
 }

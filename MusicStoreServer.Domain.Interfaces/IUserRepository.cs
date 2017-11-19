@@ -9,7 +9,6 @@ namespace MusicStoreServer.Domain.Interfaces
 {
     public interface IUserRepository : IRepository<ApplicationUser>
     {
-        Task<ShortUser> GetShortUser(string userId);
-        Task<ApplicationUser> GetApplicationUser(string userId);
+        Task<DatabaseOneResult<ApplicationUser>> Get(string id);
     }
 }

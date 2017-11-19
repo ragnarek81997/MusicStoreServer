@@ -26,33 +26,20 @@ namespace MusicStoreServer.Infrastructure.Data
             return await base.DeleteOneAsync((_)=> _.Id == id);
         }
 
-        public async Task<AlbumModel> Get(string id)
+        public async Task<DatabaseOneResult<AlbumModel>> Get(string id)
         {
             return await base.FindOneAsync(id);
         }
 
-        public async Task<List<AlbumModel>> GetMany(int skip, int take)
+        public async Task<DatabaseManyResult<AlbumModel>> GetMany(int skip, int take)
         {
             return await base.GetAllAsync(take, skip);
         }
 
-        public async Task<List<AlbumModel>> GetMany(string searchQuery, int skip, int take)
+        public async Task<DatabaseManyResult<AlbumModel>> GetMany(string searchQuery, int skip, int take)
         {
             string searchLowerQuery = searchQuery.ToLower();
             return await base.FindManyAsync((_) => searchLowerQuery.Contains(_.Name.ToLower()), take, skip);
-        }
-
-        public async Task<List<AlbumModel>> GetMany(List<string> ids, int skip, int take)
-        {
-            string idsQuery = string.Join("|", ids);
-            return await base.FindManyAsync((_) => idsQuery.Contains(_.Id), take, skip);
-        }
-
-        public async Task<List<AlbumModel>> GetMany(List<string> ids, string searchQuery, int skip, int take)
-        {
-            string idsQuery = string.Join("|", ids);
-            string searchLowerQuery = searchQuery.ToLower();
-            return await base.FindManyAsync((_) => idsQuery.Contains(_.Id) && searchLowerQuery.Contains(_.Name.ToLower()), take, skip);
         }
 
         public async Task<DatabaseResult> Update(AlbumModel model)

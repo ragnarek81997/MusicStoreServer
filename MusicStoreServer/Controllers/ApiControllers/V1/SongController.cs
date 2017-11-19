@@ -71,32 +71,27 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
                 break;
             }
 
-            if (link == null)
+            if (link != null)
             {
-                serviceResult.Success = false;
-                serviceResult.Error.Description = "Temp url link not found.";
-                serviceResult.Error.Code = ErrorStatusCode.BudRequest;
-                return ServiceResult(serviceResult);
+                UploadSong upload = new UploadSong();
+
+                string inputPath = UploadSongProperties.TemporaryFolder + link.Id + UploadSongProperties.GetType(link.MimeType);
+                string sourcePath = string.Empty;
+                var moveSongResult = upload.MoveFile(inputPath, sourcePath);
+
+                if (!String.IsNullOrEmpty(moveSongResult.Error))
+                {
+                    ModelState.AddModelError("Move", moveSongResult.Error);
+                    return BadRequest(ModelState);
+                }
+
+                model.Links = new List<LinkModel>()
+                {
+                    link
+                };
             }
 
-            UploadSong upload = new UploadSong();
-
-            string inputPath = UploadSongProperties.TemporaryFolder + link.Id + UploadSongProperties.FileType;
-            string sourcePath = string.Empty;
-            var moveSongResult = upload.MoveFile(inputPath, sourcePath);
-
-            if (!String.IsNullOrEmpty(moveSongResult.Error))
-            {
-                ModelState.AddModelError("Move", moveSongResult.Error);
-                return BadRequest(ModelState);
-            }
-
-            model.Id = System.Guid.NewGuid().ToString("N").Substring(0, 10);
-            model.Links = new List<LinkModel>()
-            {
-                link//,
-                //torrentLink
-            };
+            model.Id = System.Guid.NewGuid().ToString("N").Substring(0, 24);
 
             var result = await _songService.Add(model);
             serviceResult.Success = result.Success;
@@ -116,12 +111,11 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
         public async Task<IHttpActionResult> Upload()
         {
             var file = HttpContext.Current.Request.Files.Count > 0 ? HttpContext.Current.Request.Files[0] : null;
-            string path = string.Empty;
 
             var upload = new UploadSong();
             if (file != null)
             {
-                UploadSongResult result = await upload.UploadFileSong(file, path: path);
+                UploadSongResult result = await upload.UploadFileSong(file);
 
                 if (!String.IsNullOrEmpty(result.Error))
                 {
@@ -129,12 +123,17 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
                     return BadRequest(ModelState);
                 }
 
-                var currentUser = await _userService.GetApplicationUser(User.Identity.GetUserId());
+                var currentUserResult = await _userService.GetApplicationUser(User.Identity.GetUserId());
+                if (!currentUserResult.Success)
+                {
+                    return ServiceResult(currentUserResult);
+                }
 
                 var link = new LinkModel
                 {
                     Id = result.Id,
-                    Owner = currentUser
+                    Owner = currentUserResult.Result,
+                    MimeType = result.MimeType
                 };
                 return Ok(link);
             }

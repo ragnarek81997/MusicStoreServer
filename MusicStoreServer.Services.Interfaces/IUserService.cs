@@ -12,7 +12,8 @@ namespace MusicStoreServer.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<ApplicationUser> GetApplicationUser(string userId);
-        Task<ShortUser> GetShortUser(string userId);
+        Task<ServiceResult<ApplicationUser>> GetApplicationUser(string userId);
+
+        Task<ServiceResult<ShortUser>> GetShortUser(string userId);
     }
 }

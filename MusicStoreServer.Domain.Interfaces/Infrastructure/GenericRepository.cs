@@ -17,10 +17,24 @@ namespace MusicStoreServer.Domain.Interfaces.Infrastructure
             _applicationDbContext = applicationDbContext ?? new ApplicationDbContext();
         }
         #region COUNT
-        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> where)
+        public async Task<DatabaseResult<int>> CountAsync(Expression<Func<TEntity, bool>> where)
         {
-            var dbSet = _applicationDbContext.Set<TEntity>();
-            return await dbSet.CountAsync(where);
+            var dbResult = new DatabaseResult<int>();
+            try
+            {
+                var dbSet = _applicationDbContext.Set<TEntity>();
+                var result = await dbSet.CountAsync(where);
+
+                dbResult.Success = true;
+                dbResult.Entity = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception CountAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
         }
         #endregion
 
@@ -82,106 +96,282 @@ namespace MusicStoreServer.Domain.Interfaces.Infrastructure
         #endregion
 
         #region FIND_MANY
-        public async Task<List<TEntity>> FindManyAsync(Expression<Func<TEntity, bool>> predicate, int limit = 50, int skip = 0)
+        public async Task<DatabaseManyResult<TEntity>> FindManyAsync(Expression<Func<TEntity, bool>> predicate, int limit = 50, int skip = 0)
         {
-            var dbSet = _applicationDbContext.Set<TEntity>();
-            return await dbSet.Where(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+            var dbResult = new DatabaseManyResult<TEntity>();
+            try
+            {
+                var dbSet = _applicationDbContext.Set<TEntity>();
+                var result = await dbSet.Where(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+
+                if (result == null) throw new ArgumentNullException("Result object is null.");
+
+                dbResult.Success = true;
+                dbResult.Entities = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception FindManyAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
         }
-        public async Task<List<TEntity>> FindManyAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null, int limit = 50, int skip = 0)
+        public async Task<DatabaseManyResult<TEntity>> FindManyAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null, int limit = 50, int skip = 0)
         {
-            var dbSet = _applicationDbContext.Set<TEntity>();
-            var dbQuery = dbSet.Include(include);
+            var dbResult = new DatabaseManyResult<TEntity>();
+            try
+            {
+                var dbSet = _applicationDbContext.Set<TEntity>();
+                var dbQuery = dbSet.Include(include);
 
-            dbQuery = (include2 != null) ? dbQuery.Include(include2) : dbQuery;
-            dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
-            dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
+                dbQuery = (include2 != null) ? dbQuery.Include(include2) : dbQuery;
+                dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
+                dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
 
-            return await dbQuery.Where(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+                var result = await dbQuery.Where(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+
+                if (result == null) throw new ArgumentNullException("Result object is null.");
+
+                dbResult.Success = true;
+                dbResult.Entities = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception FindManyAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
         }
         #endregion
 
         #region FIND_ONE
-        public async Task<TEntity> FindOneAsync(Expression<Func<TEntity, bool>> predicate)
+        public async Task<DatabaseOneResult<TEntity>> FindOneAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            var dbSet = _applicationDbContext.Set<TEntity>();
-            return await dbSet.FirstOrDefaultAsync(predicate);
+            var dbResult = new DatabaseOneResult<TEntity>();
+            try
+            {
+                var dbSet = _applicationDbContext.Set<TEntity>();
+                var result = await dbSet.FirstOrDefaultAsync(predicate);
+
+                if (result == null) throw new ArgumentNullException("Result object is null.");
+
+                dbResult.Success = true;
+                dbResult.Entity = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception FindOneAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
         }
-        public async Task<TEntity> FindOneAsync(string id)
+        public async Task<DatabaseOneResult<TEntity>> FindOneAsync(string id)
         {
-            var dbSet = _applicationDbContext.Set<TEntity>();
-            return await dbSet.FindAsync(id);
+            var dbResult = new DatabaseOneResult<TEntity>();
+            try
+            {
+                var dbSet = _applicationDbContext.Set<TEntity>();
+                var result = await dbSet.FindAsync(id);
+
+                if (result == null) throw new ArgumentNullException("Result object is null.");
+
+                dbResult.Success = true;
+                dbResult.Entity = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception FindOneAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
         }
-        public async Task<TEntity> FindOneAsync(string id, Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null)
+        public async Task<DatabaseOneResult<TEntity>> FindOneAsync(string id, Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null)
         {
             return await FindOneAsync((entity)=> entity.Id == id, include, include2, include3, include4);
         }
-        public async Task<TEntity> FindOneAsync(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null)
+        public async Task<DatabaseOneResult<TEntity>> FindOneAsync(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null)
         {
-            var dbSet = _applicationDbContext.Set<TEntity>();
-            var dbQuery = dbSet.Include(include);
+            var dbResult = new DatabaseOneResult<TEntity>();
+            try
+            {
+                var dbSet = _applicationDbContext.Set<TEntity>();
+                var dbQuery = dbSet.Include(include);
 
-            dbQuery = (include2 != null) ? dbQuery.Include(include2) : dbQuery;
-            dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
-            dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
+                dbQuery = (include2 != null) ? dbQuery.Include(include2) : dbQuery;
+                dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
+                dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
 
-            return await dbQuery.FirstOrDefaultAsync(where);
+                var result = await dbQuery.FirstOrDefaultAsync(where);
+
+                if (result == null) throw new ArgumentNullException("Result object is null.");
+
+                dbResult.Success = true;
+                dbResult.Entity = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception FindOneAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
         }
         #endregion
 
         #region GET_ALL
-        public async Task<List<TEntity>> GetAllAsync(int limit = 50, int skip = 0)
+        public async Task<DatabaseManyResult<TEntity>> GetAllAsync(int limit = 50, int skip = 0)
         {
-            var dbSet = _applicationDbContext.Set<TEntity>();
-            return await dbSet.Skip(skip).Take(limit).ToListAsync<TEntity>();
+            var dbResult = new DatabaseManyResult<TEntity>();
+            try
+            {
+                var dbSet = _applicationDbContext.Set<TEntity>();
+                var result = await dbSet.Skip(skip).Take(limit).ToListAsync<TEntity>();
+
+                if (result == null) throw new ArgumentNullException("Result object is null.");
+
+                dbResult.Success = true;
+                dbResult.Entities = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception GetAllAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
         }
 
-        public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null, int limit = 50, int skip = 0)
+        public async Task<DatabaseManyResult<TEntity>> GetAllAsync(Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null, int limit = 50, int skip = 0)
         {
-            var dbSet = _applicationDbContext.Set<TEntity>();
+            var dbResult = new DatabaseManyResult<TEntity>();
+            try
+            {
+                var dbSet = _applicationDbContext.Set<TEntity>();
 
-            var dbQuery = dbSet.Include(include);
-            dbQuery = (include2 != null) ? dbQuery.Include(include2) : dbQuery;
-            dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
-            dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
+                var dbQuery = dbSet.Include(include);
+                dbQuery = (include2 != null) ? dbQuery.Include(include2) : dbQuery;
+                dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
+                dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
 
-            return await dbQuery.Skip(skip).Take(limit).ToListAsync<TEntity>();
+                var result = await dbQuery.Skip(skip).Take(limit).ToListAsync<TEntity>();
+
+                if (result == null) throw new ArgumentNullException("Result object is null.");
+
+                dbResult.Success = true;
+                dbResult.Entities = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception GetAllAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
         }
 
-        public async Task<List<TEntity>> GetAllWithOrderAscAsync(Expression<Func<TEntity, object>> predicate, int limit = 50, int skip = 0)
+        public async Task<DatabaseManyResult<TEntity>> GetAllWithOrderAscAsync(Expression<Func<TEntity, object>> predicate, int limit = 50, int skip = 0)
         {
-            var dbSet = _applicationDbContext.Set<TEntity>();
-            return await dbSet.OrderBy(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+            var dbResult = new DatabaseManyResult<TEntity>();
+            try
+            {
+                var dbSet = _applicationDbContext.Set<TEntity>();
+                var result = await dbSet.OrderBy(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+
+                if (result == null) throw new ArgumentNullException("Result object is null.");
+
+                dbResult.Success = true;
+                dbResult.Entities = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception GetAllAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
         }
 
-        public async Task<List<TEntity>> GetAllWithOrderAscAsync(Expression<Func<TEntity, object>> predicate, Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null, int limit = 50, int skip = 0)
+        public async Task<DatabaseManyResult<TEntity>> GetAllWithOrderAscAsync(Expression<Func<TEntity, object>> predicate, Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null, int limit = 50, int skip = 0)
         {
-            var dbSet = _applicationDbContext.Set<TEntity>();
-            var dbQuery = dbSet.Include(include);
+            var dbResult = new DatabaseManyResult<TEntity>();
+            try
+            {
+                var dbSet = _applicationDbContext.Set<TEntity>();
+                var dbQuery = dbSet.Include(include);
 
-            dbQuery = (include2 != null) ? dbQuery.Include(include2) : dbQuery;
-            dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
-            dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
+                dbQuery = (include2 != null) ? dbQuery.Include(include2) : dbQuery;
+                dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
+                dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
 
-            return await dbQuery.OrderBy(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+                var result = await dbQuery.OrderBy(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+
+                if (result == null) throw new ArgumentNullException("Result object is null.");
+
+                dbResult.Success = true;
+                dbResult.Entities = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception GetAllAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
         }
 
 
-        public async Task<List<TEntity>> GetAllWithOrderDescAsync(Expression<Func<TEntity, object>> predicate, int limit = 50, int skip = 0)
+        public async Task<DatabaseManyResult<TEntity>> GetAllWithOrderDescAsync(Expression<Func<TEntity, object>> predicate, int limit = 50, int skip = 0)
         {
-            var dbSet = _applicationDbContext.Set<TEntity>();
-            return await dbSet.OrderByDescending(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+            var dbResult = new DatabaseManyResult<TEntity>();
+            try
+            {
+                var dbSet = _applicationDbContext.Set<TEntity>();
+                var result = await dbSet.OrderByDescending(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+
+                if (result == null) throw new ArgumentNullException("Result object is null.");
+
+                dbResult.Success = true;
+                dbResult.Entities = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception GetAllAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
         }
 
-        public async Task<List<TEntity>> GetAllWithOrderDescAsync(Expression<Func<TEntity, object>> predicate, Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null, int limit = 50, int skip = 0)
+        public async Task<DatabaseManyResult<TEntity>> GetAllWithOrderDescAsync(Expression<Func<TEntity, object>> predicate, Expression<Func<TEntity, object>> include, Expression<Func<TEntity, object>> include2 = null, Expression<Func<TEntity, object>> include3 = null, Expression<Func<TEntity, object>> include4 = null, int limit = 50, int skip = 0)
         {
-            var dbSet = _applicationDbContext.Set<TEntity>();
-            var dbQuery = dbSet.Include(include);
+            var dbResult = new DatabaseManyResult<TEntity>();
+            try
+            {
+                var dbSet = _applicationDbContext.Set<TEntity>();
+                var dbQuery = dbSet.Include(include);
 
-            dbQuery = (include2 != null) ? dbQuery.Include(include2) : dbQuery;
-            dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
-            dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
+                dbQuery = (include2 != null) ? dbQuery.Include(include2) : dbQuery;
+                dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
+                dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
 
-            return await dbQuery.OrderByDescending(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+                var result = await dbQuery.OrderByDescending(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+
+                if (result == null) throw new ArgumentNullException("Result object is null.");
+
+                dbResult.Success = true;
+                dbResult.Entities = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception GetAllAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
         }
         #endregion
 
@@ -248,6 +438,90 @@ namespace MusicStoreServer.Domain.Interfaces.Infrastructure
             {
                 dbResult.Exception = ex;
                 dbResult.Message = "Exception UpdateOneAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
+        }
+        #endregion
+
+        #region SQL_QUERY
+        public async Task<DatabaseResult<int>> SqlQueryIntAsync(string query)
+        {
+            var dbResult = new DatabaseResult<int>();
+            try
+            {
+                var result = await _applicationDbContext.Database.SqlQuery<int>(query).FirstOrDefaultAsync();
+
+                dbResult.Success = true;
+                dbResult.Entity = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception SqlQueryIntAsync " + typeof(int).Name;
+                return dbResult;
+            }
+        }
+
+        public async Task<DatabaseResult<string>> SqlQueryStringAsync(string query)
+        {
+            var dbResult = new DatabaseResult<string>();
+            try
+            {
+                var result = await _applicationDbContext.Database.SqlQuery<string>(query).FirstOrDefaultAsync();
+
+                if (result == null) throw new ArgumentNullException("Result object is null.");
+
+                dbResult.Success = true;
+                dbResult.Entity = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception SqlQueryStringAsync " + typeof(string).Name;
+                return dbResult;
+            }
+        }
+
+        public async Task<DatabaseOneResult<TEntity>> SqlQueryEntityAsync(string query)
+        {
+            var dbResult = new DatabaseOneResult<TEntity>();
+            try
+            {
+                var result = await _applicationDbContext.Database.SqlQuery<TEntity>(query).FirstOrDefaultAsync();
+
+                if (result == null) throw new ArgumentNullException("Result object is null.");
+
+                dbResult.Success = true;
+                dbResult.Entity = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception SqlQueryEntityAsync " + typeof(TEntity).Name;
+                return dbResult;
+            }
+        }
+
+        public async Task<DatabaseManyResult<TEntity>> SqlQueryManyEntitiesAsync(string query)
+        {
+            var dbResult = new DatabaseManyResult<TEntity>();
+            try
+            {
+                var result = await _applicationDbContext.Database.SqlQuery<TEntity>(query).ToListAsync();
+
+                if (result == null) throw new ArgumentNullException("Result object is null.");
+
+                dbResult.Success = true;
+                dbResult.Entities = result;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception SqlQueryManyEntitiesAsync " + typeof(TEntity).Name;
                 return dbResult;
             }
         }

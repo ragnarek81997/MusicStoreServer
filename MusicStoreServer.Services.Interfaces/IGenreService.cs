@@ -17,9 +17,6 @@ namespace MusicStoreServer.Services.Interfaces
         Task<ServiceResult<List<GenreModel>>> GetMany(int skip, int take);
         Task<ServiceResult<List<GenreModel>>> GetMany(string searchQuery, int skip, int take);
 
-        Task<ServiceResult<List<GenreModel>>> GetMany(List<string> ids, int skip, int take);
-        Task<ServiceResult<List<GenreModel>>> GetMany(List<string> ids, string searchQuery, int skip, int take);
-
         Task<ServiceResult> Add(GenreModel model);
         Task<ServiceResult> Update(GenreModel model);
         Task<ServiceResult> Delete(string id);

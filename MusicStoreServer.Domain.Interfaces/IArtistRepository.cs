@@ -8,13 +8,10 @@ namespace MusicStoreServer.Domain.Interfaces
 {
     public interface IArtistRepository : IRepository<ArtistModel>
     {
-        Task<ArtistModel> Get(string id);
+        Task<DatabaseOneResult<ArtistModel>> Get(string id);
 
-        Task<List<ArtistModel>> GetMany(int skip, int take);
-        Task<List<ArtistModel>> GetMany(string searchQuery, int skip, int take);
-
-        Task<List<ArtistModel>> GetMany(List<string> ids, int skip, int take);
-        Task<List<ArtistModel>> GetMany(List<string> ids, string searchQuery, int skip, int take);
+        Task<DatabaseManyResult<ArtistModel>> GetMany(int skip, int take);
+        Task<DatabaseManyResult<ArtistModel>> GetMany(string searchQuery, int skip, int take);
 
         Task<DatabaseResult> Add(ArtistModel model);
         Task<DatabaseResult> Update(ArtistModel model);

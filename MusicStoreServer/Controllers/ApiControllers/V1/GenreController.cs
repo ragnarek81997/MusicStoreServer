@@ -60,7 +60,7 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
                 return ServiceResult(serviceResult);
             }
 
-            model.Id = System.Guid.NewGuid().ToString("N").Substring(0, 10);
+            model.Id = System.Guid.NewGuid().ToString("N").Substring(0, 24);
 
             var result = await _genreService.Add(model);
             serviceResult.Success = result.Success;

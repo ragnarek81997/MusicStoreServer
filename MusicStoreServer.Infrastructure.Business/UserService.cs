@@ -42,14 +42,45 @@ namespace MusicStoreServer.Infrastructure.Business
         }
         #endregion
 
-        public async Task<ApplicationUser> GetApplicationUser(string userId)
+        public async Task<ServiceResult<ApplicationUser>> GetApplicationUser(string userId)
         {
-            return await _userRepository.GetApplicationUser(userId);
+            var serviceResult = new ServiceResult<ApplicationUser>();
+            var result = await _userRepository.Get(userId);
+            if (result.Success)
+            {
+                serviceResult.Success = true;
+                serviceResult.Result = result.Entity;
+            }
+            else
+            {
+                serviceResult.Error.Code = ErrorStatusCode.BudRequest;
+                serviceResult.Error.Description = result.Message;
+            }
+            return serviceResult;
         }
 
-        public async Task<ShortUser> GetShortUser(string userId)
+        public async Task<ServiceResult<ShortUser>> GetShortUser(string userId)
         {
-            return await _userRepository.GetShortUser(userId);
+            var serviceResult = new ServiceResult<ShortUser>();
+
+            var result = await this.GetApplicationUser(userId);
+            if (result.Success)
+            {
+                serviceResult.Success = true;
+                serviceResult.Result = new ShortUser()
+                {
+                    Id = result.Result.Id,
+                    Email = result.Result.Email,
+                    FirstName = result.Result.FirstName,
+                    LastName = result.Result.LastName,
+                    PhotoId = result.Result.PhotoId
+                };
+            }
+            else
+            {
+                serviceResult.Error = result.Error;
+            }
+            return serviceResult;
         }
     }
 }

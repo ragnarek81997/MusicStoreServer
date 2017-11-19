@@ -38,8 +38,6 @@ namespace MusicStoreServer.Infrastructure.Data.Utility.AzureBlob
                 // If path null save to temporary directory 
                 if (path == null)
                     path = UploadSongProperties.TemporaryFolder;
-                else
-                    path = userId + path;
 
                 if (inputFile == null)
                 {
@@ -49,7 +47,7 @@ namespace MusicStoreServer.Infrastructure.Data.Utility.AzureBlob
                 }
 
                 // Obtaining Content Type 
-                string fileType = UploadSongProperties.SongsFolder;
+                string fileType = SupportMimeType(inputFile.ContentType);
 
                 // Checking filr for errors 
                 bool checkFIle = CheckFile(inputFile.InputStream, fileType);
@@ -61,12 +59,13 @@ namespace MusicStoreServer.Infrastructure.Data.Utility.AzureBlob
                     return uploadSongResult;
                 }
 
-                nameFile = System.Guid.NewGuid().ToString("N").Substring(0, 10); // Giving name of a file 10 symbols 
+                nameFile = System.Guid.NewGuid().ToString("N").Substring(0, 24); // Giving name of a file 24 symbols 
 
                 // Concatenation of path, file name and type 
                 string sourcePath = path + nameFile + fileType;
 
                 uploadSongResult.Id = nameFile;
+                uploadSongResult.MimeType = inputFile.ContentType;
 
                 // Завантаження потоку на Azure BLOB
                 var result = await UploadFileToAzureAsync(inputFile.InputStream, sourcePath, inputFile.ContentType);
@@ -112,6 +111,14 @@ namespace MusicStoreServer.Infrastructure.Data.Utility.AzureBlob
 
                 return false;
             }
+        }
+
+        private static string SupportMimeType(string mimeType)
+        {
+            string type = UploadSongProperties.GetType(mimeType);
+            if(!string.IsNullOrWhiteSpace(type))
+                return type;
+            return null;
         }
     }
 }

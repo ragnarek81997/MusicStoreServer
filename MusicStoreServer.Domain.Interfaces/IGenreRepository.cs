@@ -8,13 +8,10 @@ namespace MusicStoreServer.Domain.Interfaces
 {
     public interface IGenreRepository : IRepository<GenreModel>
     {
-        Task<GenreModel> Get(string id);
+        Task<DatabaseOneResult<GenreModel>> Get(string id);
 
-        Task<List<GenreModel>> GetMany(int skip, int take);
-        Task<List<GenreModel>> GetMany(string searchQuery, int skip, int take);
-
-        Task<List<GenreModel>> GetMany(List<string> ids, int skip, int take);
-        Task<List<GenreModel>> GetMany(List<string> ids, string searchQuery, int skip, int take);
+        Task<DatabaseManyResult<GenreModel>> GetMany(int skip, int take);
+        Task<DatabaseManyResult<GenreModel>> GetMany(string searchQuery, int skip, int take);
 
         Task<DatabaseResult> Add(GenreModel model);
         Task<DatabaseResult> Update(GenreModel model);

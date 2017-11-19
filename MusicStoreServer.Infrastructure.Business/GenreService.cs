@@ -47,11 +47,15 @@ namespace MusicStoreServer.Infrastructure.Business
         {
             var serviceResult = new ServiceResult<GenreModel>();
             var result = await _genreRepository.Get(id);
-            serviceResult.Success = result != null;
-            if (result == null)
+            if (result.Success)
+            {
+                serviceResult.Success = true;
+                serviceResult.Result = result.Entity;
+            }
+            else
             {
                 serviceResult.Error.Code = ErrorStatusCode.BudRequest;
-                serviceResult.Error.Description = "Object is empty.";
+                serviceResult.Error.Description = result.Message;
             }
             return serviceResult;
         }
@@ -60,11 +64,15 @@ namespace MusicStoreServer.Infrastructure.Business
         {
             var serviceResult = new ServiceResult<List<GenreModel>>();
             var result = await _genreRepository.GetMany(skip, take);
-            serviceResult.Success = result != null;
-            if (result == null)
+            if (result.Success)
+            {
+                serviceResult.Success = true;
+                serviceResult.Result = result.Entities;
+            }
+            else
             {
                 serviceResult.Error.Code = ErrorStatusCode.BudRequest;
-                serviceResult.Error.Description = "Object is empty.";
+                serviceResult.Error.Description = result.Message;
             }
             return serviceResult;
         }
@@ -73,37 +81,15 @@ namespace MusicStoreServer.Infrastructure.Business
         {
             var serviceResult = new ServiceResult<List<GenreModel>>();
             var result = await _genreRepository.GetMany(searchQuery, skip, take);
-            serviceResult.Success = result != null;
-            if (result == null)
+            if (result.Success)
             {
-                serviceResult.Error.Code = ErrorStatusCode.BudRequest;
-                serviceResult.Error.Description = "Object is empty.";
+                serviceResult.Success = true;
+                serviceResult.Result = result.Entities;
             }
-            return serviceResult;
-        }
-
-        public async Task<ServiceResult<List<GenreModel>>> GetMany(List<string> ids, int skip, int take)
-        {
-            var serviceResult = new ServiceResult<List<GenreModel>>();
-            var result = await _genreRepository.GetMany(ids, skip, take);
-            serviceResult.Success = result != null;
-            if (result == null)
+            else
             {
                 serviceResult.Error.Code = ErrorStatusCode.BudRequest;
-                serviceResult.Error.Description = "Object is empty.";
-            }
-            return serviceResult;
-        }
-
-        public async Task<ServiceResult<List<GenreModel>>> GetMany(List<string> ids, string searchQuery, int skip, int take)
-        {
-            var serviceResult = new ServiceResult<List<GenreModel>>();
-            var result = await _genreRepository.GetMany(ids, searchQuery, skip, take);
-            serviceResult.Success = result != null;
-            if (result == null)
-            {
-                serviceResult.Error.Code = ErrorStatusCode.BudRequest;
-                serviceResult.Error.Description = "Object is empty.";
+                serviceResult.Error.Description = result.Message;
             }
             return serviceResult;
         }
