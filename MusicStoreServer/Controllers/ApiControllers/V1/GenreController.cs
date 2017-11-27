@@ -52,6 +52,8 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
         {
             var serviceResult = new ServiceResult<GenreModel>();
 
+            ModelState.Remove("model.Id");
+
             if (!ModelState.IsValid)
             {
                 serviceResult.Success = false;
@@ -63,6 +65,34 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
             model.Id = System.Guid.NewGuid().ToString("N").Substring(0, 24);
 
             var result = await _genreService.Add(model);
+            serviceResult.Success = result.Success;
+            if (result.Success)
+            {
+                serviceResult.Result = model;
+            }
+            else
+            {
+                serviceResult.Error = result.Error;
+            }
+
+            return ServiceResult(serviceResult);
+        }
+
+        [HttpPost]
+        [Route("Update")]
+        public async Task<IHttpActionResult> Update(GenreModel model)
+        {
+            var serviceResult = new ServiceResult<GenreModel>();
+
+            if (!ModelState.IsValid)
+            {
+                serviceResult.Success = false;
+                serviceResult.Error.Description = "Model is not valid.";
+                serviceResult.Error.Code = ErrorStatusCode.BudRequest;
+                return ServiceResult(serviceResult);
+            }
+
+            var result = await _genreService.Update(model);
             serviceResult.Success = result.Success;
             if (result.Success)
             {

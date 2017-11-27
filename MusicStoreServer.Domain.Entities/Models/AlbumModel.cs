@@ -20,7 +20,7 @@ namespace MusicStoreServer.Domain.Entities.Models
         public ICollection<ArtistModel> Artists { get; set; }
         [Required]
         public ICollection<GenreModel> Genres { get; set; }
-        [Required]
+
         public ICollection<SongModel> Songs { get; set; }
     }
 }
