@@ -7,13 +7,13 @@ namespace MusicStoreServer.Domain.Entities.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class SecondMigration : IMigrationMetadata
+    public sealed partial class DisableMappingResultModelsMigration : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(SecondMigration));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(DisableMappingResultModelsMigration));
         
         string IMigrationMetadata.Id
         {
-            get { return "201711191713515_SecondMigration"; }
+            get { return "201712130015197_DisableMappingResultModelsMigration"; }
         }
         
         string IMigrationMetadata.Source

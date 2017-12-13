@@ -10,6 +10,8 @@ namespace MusicStoreServer.Domain.Interfaces
     {
         Task<DatabaseOneResult<ArtistModel>> Get(string id);
 
+        Task<DatabaseManyResult<ArtistModel>> GetMany(ICollection<string> ids, int skip, int take);
+
         Task<DatabaseManyResult<ArtistModel>> GetMany(int skip, int take);
         Task<DatabaseManyResult<ArtistModel>> GetMany(string searchQuery, int skip, int take);
 

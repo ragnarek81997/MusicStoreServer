@@ -1,7 +1,9 @@
 ﻿using MusicStoreServer.Domain.Entities.Enums;
+using MusicStoreServer.Domain.Entities.Infrastructure;
 using MusicStoreServer.Domain.Entities.Models;
 using MusicStoreServer.Domain.Entities.Struct;
 using MusicStoreServer.Domain.Interfaces;
+using MusicStoreServer.Infrastructure.Data;
 using MusicStoreServer.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,11 +12,15 @@ namespace MusicStoreServer.Infrastructure.Business
 {
     public class GenreService : IGenreService
     {
+        private readonly ApplicationDbContext _applicationDbContext;
+
         private readonly IGenreRepository _genreRepository;
 
         public GenreService(IGenreRepository genreRepository)
         {
-            this._genreRepository = genreRepository;
+            _applicationDbContext = new ApplicationDbContext();
+
+            _genreRepository = new GenreRepository(_applicationDbContext);
         }
 
         public async Task<ServiceResult> Add(GenreModel model)

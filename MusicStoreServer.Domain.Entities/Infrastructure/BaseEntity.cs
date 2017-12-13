@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MusicStoreServer.Domain.Entities.Infrastructure
 {
-    public class BaseEntity : IBaseEntity
+    public abstract class BaseEntity : IBaseEntity
     {
         [Key]
         [StringLength(24, MinimumLength = 24)]

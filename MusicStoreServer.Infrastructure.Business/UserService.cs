@@ -14,16 +14,21 @@ using System.Web.Http;
 using MusicStoreServer.Infrastructure.Data.Utility.AzureBlob;
 using MusicStoreServer.Domain.Entities.Dictionaries;
 using System.Linq;
+using MusicStoreServer.Infrastructure.Data;
 
 namespace MusicStoreServer.Infrastructure.Business
 {
     public class UserService : IUserService
     {
+        private readonly ApplicationDbContext _applicationDbContext;
+
         private readonly IUserRepository _userRepository;
 
         public UserService(IUserRepository userRepository)
         {
-            this._userRepository = userRepository;
+            _applicationDbContext = new ApplicationDbContext();
+
+            _userRepository = new UserRepository(_applicationDbContext);
         }
 
         #region initialization

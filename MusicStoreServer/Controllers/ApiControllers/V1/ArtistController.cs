@@ -46,11 +46,21 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
             return ServiceResult(result);
         }
 
+        [HttpGet]
+        [Route("GetMany")]
+        public async Task<IHttpActionResult> GetMany(string searchQuery, int skip, int take)
+        {
+            var result = await _artistService.GetMany(searchQuery, skip, take);
+            return ServiceResult(result);
+        }
+
         [HttpPost]
         [Route("Add")]
         public async Task<IHttpActionResult> Add(ArtistModel model)
         {
             var serviceResult = new ServiceResult<ArtistModel>();
+
+            ModelState.Remove("model.Id");
 
             if (!ModelState.IsValid)
             {
@@ -63,6 +73,34 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
             model.Id = System.Guid.NewGuid().ToString("N").Substring(0, 24);
 
             var result = await _artistService.Add(model);
+            serviceResult.Success = result.Success;
+            if (result.Success)
+            {
+                serviceResult.Result = model;
+            }
+            else
+            {
+                serviceResult.Error = result.Error;
+            }
+
+            return ServiceResult(serviceResult);
+        }
+
+        [HttpPost]
+        [Route("Update")]
+        public async Task<IHttpActionResult> Update(ArtistModel model)
+        {
+            var serviceResult = new ServiceResult<ArtistModel>();
+
+            if (!ModelState.IsValid)
+            {
+                serviceResult.Success = false;
+                serviceResult.Error.Description = "Model is not valid.";
+                serviceResult.Error.Code = ErrorStatusCode.BudRequest;
+                return ServiceResult(serviceResult);
+            }
+
+            var result = await _artistService.Update(model);
             serviceResult.Success = result.Success;
             if (result.Success)
             {

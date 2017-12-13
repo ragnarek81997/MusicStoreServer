@@ -12,7 +12,7 @@ namespace MusicStoreServer.Infrastructure.Data
 {
     public class ArtistRepository : GenericRepository<ArtistModel>, IArtistRepository
     {
-        public ArtistRepository() : base()
+        public ArtistRepository(ApplicationDbContext applicationDbContext) : base(applicationDbContext)
         {
         }
 
@@ -39,7 +39,12 @@ namespace MusicStoreServer.Infrastructure.Data
         public async Task<DatabaseManyResult<ArtistModel>> GetMany(string searchQuery, int skip, int take)
         {
             string searchLowerQuery = searchQuery.ToLower();
-            return await base.FindManyAsync((_) => searchLowerQuery.Contains(_.Name.ToLower()), take, skip);
+            return await base.FindManyAsync((_) => _.Name.ToLower().Contains(searchLowerQuery), take, skip);
+        }
+
+        public async Task<DatabaseManyResult<ArtistModel>> GetMany(ICollection<string> ids, int skip, int take)
+        {
+            return await base.FindManyAsync((_) => ids.Contains(_.Id), take, skip);
         }
 
         public async Task<DatabaseResult> Update(ArtistModel model)

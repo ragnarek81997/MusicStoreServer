@@ -16,6 +16,8 @@ using System.Net;
 using System.Net.Http;
 using System.Collections.Generic;
 using MusicStoreServer.Domain.Entities.Models;
+using MusicStoreServer.Domain.Entities.ResultModels;
+using MusicStoreServer.Domain.Entities.Models.Playlist;
 
 namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
 {
@@ -44,6 +46,89 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
         {
             var result = await _playlistService.GetMany(skip, take);
             return ServiceResult(result);
+        }
+
+        [HttpGet]
+        [Route("GetMany")]
+        public async Task<IHttpActionResult> GetMany(string searchQuery, int skip, int take)
+        {
+            var result = await _playlistService.GetMany(searchQuery, skip, take);
+            return ServiceResult(result);
+        }
+
+        [HttpPost]
+        [Route("Add")]
+        public async Task<IHttpActionResult> Add(PlaylistResultModel model)
+        {
+            var serviceResult = new ServiceResult<PlaylistModel>();
+
+            ModelState.Remove("model.Id");
+
+            if (!ModelState.IsValid)
+            {
+                serviceResult.Success = false;
+                serviceResult.Error.Description = "Model is not valid.";
+                serviceResult.Error.Code = ErrorStatusCode.BudRequest;
+                return ServiceResult(serviceResult);
+            }
+
+            if(model.OwnerId != User.Identity.GetUserId())
+            {
+                serviceResult.Success = false;
+                serviceResult.Error.Description = "Id of owner and id of current user not equals.";
+                serviceResult.Error.Code = ErrorStatusCode.BudRequest;
+                return ServiceResult(serviceResult);
+            }
+
+            model.Id = System.Guid.NewGuid().ToString("N").Substring(0, 24);
+
+            var result = await _playlistService.Add(model);
+            serviceResult.Success = result.Success;
+            if (result.Success)
+            {
+                serviceResult.Result = model;
+            }
+            else
+            {
+                serviceResult.Error = result.Error;
+            }
+            return ServiceResult(serviceResult);
+        }
+
+        [HttpPost]
+        [Route("Update")]
+        public async Task<IHttpActionResult> Update(PlaylistResultModel model)
+        {
+            var serviceResult = new ServiceResult<PlaylistModel>();
+
+            if (!ModelState.IsValid)
+            {
+                serviceResult.Success = false;
+                serviceResult.Error.Description = "Model is not valid.";
+                serviceResult.Error.Code = ErrorStatusCode.BudRequest;
+                return ServiceResult(serviceResult);
+            }
+
+            if (model.OwnerId != User.Identity.GetUserId())
+            {
+                serviceResult.Success = false;
+                serviceResult.Error.Description = "Id of owner and id of current user not equals.";
+                serviceResult.Error.Code = ErrorStatusCode.BudRequest;
+                return ServiceResult(serviceResult);
+            }
+
+            var result = await _playlistService.Update(model);
+            serviceResult.Success = result.Success;
+            if (result.Success)
+            {
+                serviceResult.Result = model;
+            }
+            else
+            {
+                serviceResult.Error = result.Error;
+            }
+
+            return ServiceResult(serviceResult);
         }
     }
 }

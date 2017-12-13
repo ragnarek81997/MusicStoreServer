@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using MusicStoreServer.Domain.Entities.ViewModels;
 using MusicStoreServer.Domain.Entities.Struct;
 using MusicStoreServer.Domain.Entities.Models;
+using MusicStoreServer.Domain.Entities.Models.Playlist;
+using MusicStoreServer.Domain.Entities.ResultModels;
 
 namespace MusicStoreServer.Services.Interfaces
 {
@@ -17,8 +19,8 @@ namespace MusicStoreServer.Services.Interfaces
         Task<ServiceResult<List<PlaylistModel>>> GetMany(int skip, int take);
         Task<ServiceResult<List<PlaylistModel>>> GetMany(string searchQuery, int skip, int take);
 
-        Task<ServiceResult> Add(PlaylistModel model);
-        Task<ServiceResult> Update(PlaylistModel model);
+        Task<ServiceResult> Add(PlaylistResultModel model);
+        Task<ServiceResult> Update(PlaylistResultModel model);
         Task<ServiceResult> Delete(string id);
     }
 }

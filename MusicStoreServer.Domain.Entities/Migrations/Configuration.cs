@@ -4,11 +4,11 @@ namespace MusicStoreServer.Domain.Entities.Migrations
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
-    
-    // Enable-Migrations -ProjectName "MusicStoreServer.Domain.Entities" -StartUpProjectName "MusicStoreServer.Web" -Verbose
 
     internal sealed class Configuration : DbMigrationsConfiguration<MusicStoreServer.Domain.Entities.Infrastructure.ApplicationDbContext>
     {
+        // Enable-Migrations -ProjectName "MusicStoreServer.Domain.Entities" -StartUpProjectName "MusicStoreServer.Web" -Verbose
+
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;

@@ -55,5 +55,16 @@ namespace MusicStoreServer.Domain.Interfaces.Infrastructure
         #region UPDATE
         Task<DatabaseResult> UpdateOneAsync(TEntity entity);
         #endregion
+
+        #region SQL_QUERY
+        Task<DatabaseResult> SqlQueryAsync(string query);
+        Task<DatabaseResult<int>> SqlQueryIntAsync(string query);
+
+        Task<DatabaseResult<string>> SqlQueryStringAsync(string query);
+
+        Task<DatabaseOneResult<TEntity>> SqlQueryEntityAsync(string query);
+
+        Task<DatabaseManyResult<TEntity>> SqlQueryManyEntitiesAsync(string query);
+        #endregion
     }
 }

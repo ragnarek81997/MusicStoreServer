@@ -15,28 +15,60 @@ using MusicStoreServer.Infrastructure.Data.Utility.AzureBlob;
 using MusicStoreServer.Domain.Entities.Dictionaries;
 using System.Linq;
 using System.Collections.Generic;
+using MusicStoreServer.Domain.Entities.Models.Playlist;
+using MusicStoreServer.Domain.Interfaces.Playlist;
+using MusicStoreServer.Domain.Entities.ResultModels;
+using MusicStoreServer.Infrastructure.Data.Playlist;
+using MusicStoreServer.Domain.Interfaces.Song;
+using MusicStoreServer.Infrastructure.Data.Song;
+using MusicStoreServer.Domain.Entities.Models.Song;
 
 namespace MusicStoreServer.Infrastructure.Business
 {
     public class PlaylistService : IPlaylistService
     {
-        private readonly IPlaylistRepository _playlistRepository;
+        private readonly ApplicationDbContext _applicationDbContext;
 
-        public PlaylistService(IPlaylistRepository playlistRepository)
+        private readonly IPlaylistRepository _playlistRepository;
+        private readonly ISongRepository _songRepository;
+
+        public PlaylistService(IPlaylistRepository playlistRepository, ISongRepository songRepository)
         {
-            this._playlistRepository = playlistRepository;
+            _applicationDbContext = new ApplicationDbContext();
+
+            _playlistRepository = new PlaylistRepository(_applicationDbContext);
+            _songRepository = new SongRepository(_applicationDbContext);
         }
 
-        public async Task<ServiceResult> Add(PlaylistModel model)
+        public async Task<ServiceResult> Add(PlaylistResultModel model)
         {
             var serviceResult = new ServiceResult();
-            var result = await _playlistRepository.Add(model);
+
+            var songsResult = model.Songs == null || model.Songs.Count == 0 ? new DatabaseManyResult<SongModel>() { Success = true, Entities = null } : await _songRepository.GetMany(model.Songs, 0, 50);
+            if (!songsResult.Success)
+            {
+                serviceResult.Error.Code = ErrorStatusCode.BudRequest;
+                serviceResult.Error.Description = songsResult.Message;
+                return serviceResult;
+            }
+
+            var modelObject = new PlaylistModel()
+            {
+                Id = model.Id,
+                Name = model.Name,
+                ArtId = model.ArtId,
+                OwnerId = model.OwnerId,
+                Songs = songsResult.Entities
+            };
+
+            var result = await _playlistRepository.Add(modelObject);
             serviceResult.Success = result.Success;
             if (!result.Success)
             {
                 serviceResult.Error.Code = ErrorStatusCode.BudRequest;
                 serviceResult.Error.Description = result.Message;
             }
+
             return serviceResult;
         }
 
@@ -104,10 +136,30 @@ namespace MusicStoreServer.Infrastructure.Business
             return serviceResult;
         }
 
-        public async Task<ServiceResult> Update(PlaylistModel model)
+        public async Task<ServiceResult> Update(PlaylistResultModel model)
         {
             var serviceResult = new ServiceResult();
-            var result = await _playlistRepository.Update(model);
+
+            var playlistResult = await this.Get(model.Id);
+            if (!playlistResult.Success)
+            {
+                serviceResult.Error = playlistResult.Error;
+                return serviceResult;
+            }
+
+            var songsResult = model.Songs == null || model.Songs.Count == 0 ? new DatabaseManyResult<SongModel>() { Success = true, Entities = null } : await _songRepository.GetMany(model.Songs, 0, 50);
+            if (!songsResult.Success)
+            {
+                serviceResult.Error.Code = ErrorStatusCode.BudRequest;
+                serviceResult.Error.Description = songsResult.Message;
+                return serviceResult;
+            }
+
+            playlistResult.Result.Name = model.Name;
+            playlistResult.Result.ArtId = model.ArtId;
+            playlistResult.Result.Songs = songsResult.Entities;
+
+            var result = await _playlistRepository.Update(playlistResult.Result);
             serviceResult.Success = result.Success;
             if (!result.Success)
             {

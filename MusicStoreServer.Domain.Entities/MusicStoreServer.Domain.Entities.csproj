@@ -98,27 +98,30 @@
     <Compile Include="Infrastructure\IBaseEntity.cs" />
     <Compile Include="Infrastructure\IdentityConfig.cs" />
     <Compile Include="Infrastructure\IdentityModels.cs" />
-    <Compile Include="Migrations\201711182218052_FirstMigration.cs" />
-    <Compile Include="Migrations\201711182218052_FirstMigration.Designer.cs">
-      <DependentUpon>201711182218052_FirstMigration.cs</DependentUpon>
+    <Compile Include="Migrations\201712121814562_FirstMigration.cs" />
+    <Compile Include="Migrations\201712121814562_FirstMigration.Designer.cs">
+      <DependentUpon>201712121814562_FirstMigration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201711191713515_SecondMigration.cs" />
-    <Compile Include="Migrations\201711191713515_SecondMigration.Designer.cs">
-      <DependentUpon>201711191713515_SecondMigration.cs</DependentUpon>
+    <Compile Include="Migrations\201712121816498_RenameAspTablesMigration.cs" />
+    <Compile Include="Migrations\201712121816498_RenameAspTablesMigration.Designer.cs">
+      <DependentUpon>201712121816498_RenameAspTablesMigration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201711271823299_ThirdMigration.cs" />
-    <Compile Include="Migrations\201711271823299_ThirdMigration.Designer.cs">
-      <DependentUpon>201711271823299_ThirdMigration.cs</DependentUpon>
+    <Compile Include="Migrations\201712130015197_DisableMappingResultModelsMigration.cs" />
+    <Compile Include="Migrations\201712130015197_DisableMappingResultModelsMigration.Designer.cs">
+      <DependentUpon>201712130015197_DisableMappingResultModelsMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\AlbumModel.cs" />
+    <Compile Include="Models\Album\AlbumModel.cs" />
     <Compile Include="Models\ArtistModel.cs" />
     <Compile Include="Models\GenreModel.cs" />
     <Compile Include="Models\LinkModel.cs" />
-    <Compile Include="Models\PlaylistModel.cs" />
-    <Compile Include="Models\SongModel.cs" />
+    <Compile Include="Models\Playlist\PlaylistModel.cs" />
+    <Compile Include="Models\Song\SongModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResultModels\AlbumResultModel.cs" />
     <Compile Include="ResultModels\Error.cs" />
+    <Compile Include="ResultModels\PlaylistResultModel.cs" />
+    <Compile Include="ResultModels\SongResultModel.cs" />
     <Compile Include="Struct\CropImage.cs" />
     <Compile Include="Struct\ServiceResult.cs" />
     <Compile Include="Struct\UploadSongResult.cs" />
@@ -129,19 +132,19 @@
     <Compile Include="ViewModels\ShortUser.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201711182218052_FirstMigration.resx">
-      <DependentUpon>201711182218052_FirstMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711191713515_SecondMigration.resx">
-      <DependentUpon>201711191713515_SecondMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711271823299_ThirdMigration.resx">
-      <DependentUpon>201711271823299_ThirdMigration.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201712121814562_FirstMigration.resx">
+      <DependentUpon>201712121814562_FirstMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712121816498_RenameAspTablesMigration.resx">
+      <DependentUpon>201712121816498_RenameAspTablesMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712130015197_DisableMappingResultModelsMigration.resx">
+      <DependentUpon>201712130015197_DisableMappingResultModelsMigration.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

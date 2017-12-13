@@ -46,6 +46,14 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
             return ServiceResult(result);
         }
 
+        [HttpGet]
+        [Route("GetMany")]
+        public async Task<IHttpActionResult> GetMany(string searchQuery, int skip, int take)
+        {
+            var result = await _genreService.GetMany(searchQuery, skip, take);
+           return ServiceResult(result);
+        }
+
         [HttpPost]
         [Route("Add")]
         public async Task<IHttpActionResult> Add(GenreModel model)

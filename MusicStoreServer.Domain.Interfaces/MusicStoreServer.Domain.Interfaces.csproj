@@ -57,15 +57,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Album\IAlbumRepository.cs" />
+    <Compile Include="ILinkRepository.cs" />
     <Compile Include="IUserRepository.cs" />
-    <Compile Include="IAlbumRepository.cs" />
     <Compile Include="IArtistRepository.cs" />
     <Compile Include="IGenreRepository.cs" />
-    <Compile Include="ISongRepository.cs" />
-    <Compile Include="IPlaylistRepository.cs" />
     <Compile Include="Infrastructure\GenericRepository.cs" />
     <Compile Include="Infrastructure\IRepository.cs" />
+    <Compile Include="Playlist\IPlaylistRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Song\ISongRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MusicStoreServer.Domain.Entities\MusicStoreServer.Domain.Entities.csproj">

@@ -5,6 +5,7 @@ using Microsoft.AspNet.Identity;
 using System;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MusicStoreServer.Domain.Entities.Infrastructure
 {

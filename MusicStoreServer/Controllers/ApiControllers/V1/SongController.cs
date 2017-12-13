@@ -12,10 +12,12 @@ using MusicStoreServer.Domain.Entities.Dictionaries;
 using MusicStoreServer.Domain.Interfaces;
 using MusicStoreServer.Services.Interfaces;
 using Microsoft.AspNet.Identity.Owin;
-using System.Net;
+using System.Linq;
 using System.Net.Http;
 using System.Collections.Generic;
 using MusicStoreServer.Domain.Entities.Models;
+using MusicStoreServer.Domain.Entities.Models.Song;
+using MusicStoreServer.Domain.Entities.ResultModels;
 
 namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
 {
@@ -49,11 +51,21 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
             return ServiceResult(result);
         }
 
+        [HttpGet]
+        [Route("GetMany")]
+        public async Task<IHttpActionResult> GetMany(string searchQuery, int skip, int take)
+        {
+            var result = await _songService.GetMany(searchQuery, skip, take);
+            return ServiceResult(result);
+        }
+
         [HttpPost]
         [Route("Add")]
-        public async Task<IHttpActionResult> Add(SongModel model)
+        public async Task<IHttpActionResult> Add(SongResultModel model)
         {
             var serviceResult = new ServiceResult<SongModel>();
+
+            ModelState.Remove("model.Id");
 
             if (!ModelState.IsValid)
             {
@@ -63,33 +75,27 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
                 return ServiceResult(serviceResult);
             }
 
-            //TODO: replace
-            LinkModel link = null;
-            foreach(var item in model.Links)
-            {
-                link = item;
-                break;
-            }
+            string link = model.Links?.FirstOrDefault();
 
-            if (link != null)
-            {
-                UploadSong upload = new UploadSong();
+            //if (link != null)
+            //{
+            //    UploadSong upload = new UploadSong();
 
-                string inputPath = UploadSongProperties.TemporaryFolder + link.Id + UploadSongProperties.GetType(link.MimeType);
-                string sourcePath = string.Empty;
-                var moveSongResult = upload.MoveFile(inputPath, sourcePath);
+            //    string inputPath = UploadSongProperties.TemporaryFolder + link.Id + UploadSongProperties.GetType(link.MimeType);
+            //    string sourcePath = string.Empty;
+            //    var moveSongResult = upload.MoveFile(inputPath, sourcePath);
 
-                if (!String.IsNullOrEmpty(moveSongResult.Error))
-                {
-                    ModelState.AddModelError("Move", moveSongResult.Error);
-                    return BadRequest(ModelState);
-                }
+            //    if (!String.IsNullOrEmpty(moveSongResult.Error))
+            //    {
+            //        ModelState.AddModelError("Move", moveSongResult.Error);
+            //        return BadRequest(ModelState);
+            //    }
 
-                model.Links = new List<LinkModel>()
-                {
-                    link
-                };
-            }
+            //    model.Links = new List<LinkModel>()
+            //    {
+            //        link
+            //    };
+            //}
 
             model.Id = System.Guid.NewGuid().ToString("N").Substring(0, 24);
 
@@ -103,6 +109,34 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
             {
                 serviceResult.Error = result.Error;
             }
+            return ServiceResult(serviceResult);
+        }
+
+        [HttpPost]
+        [Route("Update")]
+        public async Task<IHttpActionResult> Update(SongResultModel model)
+        {
+            var serviceResult = new ServiceResult<SongModel>();
+
+            if (!ModelState.IsValid)
+            {
+                serviceResult.Success = false;
+                serviceResult.Error.Description = "Model is not valid.";
+                serviceResult.Error.Code = ErrorStatusCode.BudRequest;
+                return ServiceResult(serviceResult);
+            }
+
+            var result = await _songService.Update(model);
+            serviceResult.Success = result.Success;
+            if (result.Success)
+            {
+                serviceResult.Result = model;
+            }
+            else
+            {
+                serviceResult.Error = result.Error;
+            }
+
             return ServiceResult(serviceResult);
         }
 
@@ -123,16 +157,10 @@ namespace MusicStoreServer.Web.Controllers.ApiControllers.V1
                     return BadRequest(ModelState);
                 }
 
-                var currentUserResult = await _userService.GetApplicationUser(User.Identity.GetUserId());
-                if (!currentUserResult.Success)
-                {
-                    return ServiceResult(currentUserResult);
-                }
-
                 var link = new LinkModel
                 {
                     Id = result.Id,
-                    Owner = currentUserResult.Result,
+                    OwnerId = User.Identity.GetUserId(),
                     MimeType = result.MimeType
                 };
                 return Ok(link);

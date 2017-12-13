@@ -1,10 +1,11 @@
 ﻿using MusicStoreServer.Domain.Entities.Infrastructure;
 using MusicStoreServer.Domain.Entities.Models;
+using MusicStoreServer.Domain.Entities.Models.Album;
 using MusicStoreServer.Domain.Interfaces.Infrastructure;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace MusicStoreServer.Domain.Interfaces
+namespace MusicStoreServer.Domain.Interfaces.Album
 {
     public interface IAlbumRepository : IRepository<AlbumModel>
     {

@@ -12,9 +12,10 @@ namespace MusicStoreServer.Domain.Interfaces.Infrastructure
     public abstract class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : class, IBaseEntity
     {
         private ApplicationDbContext _applicationDbContext = null;
-        public GenericRepository(ApplicationDbContext applicationDbContext = null)
+
+        public GenericRepository(ApplicationDbContext applicationDbContext)
         {
-            _applicationDbContext = applicationDbContext ?? new ApplicationDbContext();
+            _applicationDbContext = applicationDbContext;
         }
         #region COUNT
         public async Task<DatabaseResult<int>> CountAsync(Expression<Func<TEntity, bool>> where)
@@ -96,13 +97,14 @@ namespace MusicStoreServer.Domain.Interfaces.Infrastructure
         #endregion
 
         #region FIND_MANY
+
         public async Task<DatabaseManyResult<TEntity>> FindManyAsync(Expression<Func<TEntity, bool>> predicate, int limit = 50, int skip = 0)
         {
             var dbResult = new DatabaseManyResult<TEntity>();
             try
             {
                 var dbSet = _applicationDbContext.Set<TEntity>();
-                var result = await dbSet.Where(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+                var result = await dbSet.Where(predicate).OrderBy(_=>_.Id).Skip(skip).Take(limit).ToListAsync<TEntity>();
 
                 if (result == null) throw new ArgumentNullException("Result object is null.");
 
@@ -129,7 +131,7 @@ namespace MusicStoreServer.Domain.Interfaces.Infrastructure
                 dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
                 dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
 
-                var result = await dbQuery.Where(predicate).Skip(skip).Take(limit).ToListAsync<TEntity>();
+                var result = await dbQuery.Where(predicate).OrderBy(_ => _.Id).Skip(skip).Take(limit).ToListAsync<TEntity>();
 
                 if (result == null) throw new ArgumentNullException("Result object is null.");
 
@@ -229,7 +231,7 @@ namespace MusicStoreServer.Domain.Interfaces.Infrastructure
             try
             {
                 var dbSet = _applicationDbContext.Set<TEntity>();
-                var result = await dbSet.Skip(skip).Take(limit).ToListAsync<TEntity>();
+                var result = await dbSet.OrderBy(_ => _.Id).Skip(skip).Take(limit).ToListAsync<TEntity>();
 
                 if (result == null) throw new ArgumentNullException("Result object is null.");
 
@@ -257,7 +259,7 @@ namespace MusicStoreServer.Domain.Interfaces.Infrastructure
                 dbQuery = (include3 != null) ? dbQuery.Include(include3) : dbQuery;
                 dbQuery = (include4 != null) ? dbQuery.Include(include4) : dbQuery;
 
-                var result = await dbQuery.Skip(skip).Take(limit).ToListAsync<TEntity>();
+                var result = await dbQuery.OrderBy(_ => _.Id).Skip(skip).Take(limit).ToListAsync<TEntity>();
 
                 if (result == null) throw new ArgumentNullException("Result object is null.");
 
@@ -382,9 +384,15 @@ namespace MusicStoreServer.Domain.Interfaces.Infrastructure
 
             try
             {
-                _applicationDbContext.Set<TEntity>().AddRange(entities);
+                _applicationDbContext.Configuration.AutoDetectChangesEnabled = false;
+                _applicationDbContext.Configuration.ValidateOnSaveEnabled = false;
 
+                foreach (TEntity entity in entities)
+                    _applicationDbContext.Entry(entity).State = EntityState.Added;
                 await _applicationDbContext.SaveChangesAsync();
+
+                _applicationDbContext.Configuration.AutoDetectChangesEnabled = true;
+                _applicationDbContext.Configuration.ValidateOnSaveEnabled = true;
 
                 dbResult.Success = true;
                 return dbResult;
@@ -403,7 +411,7 @@ namespace MusicStoreServer.Domain.Interfaces.Infrastructure
 
             try
             {
-                _applicationDbContext.Set<TEntity>().Add(entity);
+                _applicationDbContext.Entry(entity).State = EntityState.Added;
 
                 await _applicationDbContext.SaveChangesAsync();
 
@@ -444,6 +452,23 @@ namespace MusicStoreServer.Domain.Interfaces.Infrastructure
         #endregion
 
         #region SQL_QUERY
+        public async Task<DatabaseResult> SqlQueryAsync(string query)
+        {
+            var dbResult = new DatabaseResult();
+            try
+            {
+                var result = await _applicationDbContext.Database.ExecuteSqlCommandAsync(query);
+
+                dbResult.Success = result >= 0;
+                return dbResult;
+            }
+            catch (Exception ex)
+            {
+                dbResult.Exception = ex;
+                dbResult.Message = "Exception SqlQueryAsync " + typeof(int).Name;
+                return dbResult;
+            }
+        }
         public async Task<DatabaseResult<int>> SqlQueryIntAsync(string query)
         {
             var dbResult = new DatabaseResult<int>();

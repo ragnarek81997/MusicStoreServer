@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace MusicStoreServer.Infrastructure.Data
 {
-    public class PlaylistRepository : GenericRepository<PlaylistModel>, IPlaylistRepository
+    public class LinkRepository : GenericRepository<LinkModel>, ILinkRepository
     {
-        public PlaylistRepository() : base()
+        public LinkRepository(ApplicationDbContext applicationDbContext) : base(applicationDbContext)
         {
         }
 
-        public async Task<DatabaseResult> Add(PlaylistModel model)
+        public async Task<DatabaseResult> Add(LinkModel model)
         {
             return await base.InsertOneAsync(model);
         }
@@ -26,23 +26,22 @@ namespace MusicStoreServer.Infrastructure.Data
             return await base.DeleteOneAsync((_) => _.Id == id);
         }
 
-        public async Task<DatabaseOneResult<PlaylistModel>> Get(string id)
+        public async Task<DatabaseOneResult<LinkModel>> Get(string id)
         {
             return await base.FindOneAsync(id);
         }
 
-        public async Task<DatabaseManyResult<PlaylistModel>> GetMany(int skip, int take)
+        public async Task<DatabaseManyResult<LinkModel>> GetMany(string songId, int skip, int take)
         {
             return await base.GetAllAsync(take, skip);
         }
 
-        public async Task<DatabaseManyResult<PlaylistModel>> GetMany(string searchQuery, int skip, int take)
+        public async Task<DatabaseManyResult<LinkModel>> GetMany(ICollection<string> ids, int skip, int take)
         {
-            string searchLowerQuery = searchQuery.ToLower();
-            return await base.FindManyAsync((_) => searchLowerQuery.Contains(_.Name.ToLower()), take, skip);
+            return await base.FindManyAsync((_) => ids.Contains(_.Id), take, skip);
         }
 
-        public async Task<DatabaseResult> Update(PlaylistModel model)
+        public async Task<DatabaseResult> Update(LinkModel model)
         {
             return await base.UpdateOneAsync(model);
         }

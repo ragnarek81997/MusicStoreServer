@@ -9,6 +9,13 @@ using System.Web.Mvc;
 using MusicStoreServer.Infrastructure.Business.RealtimeServices;
 using MusicStoreServer.Infrastructure.Business.Hubs;
 using MusicStoreServer.Services.Interfaces.RealtimeServices;
+using MusicStoreServer.Infrastructure.Data.Album;
+using MusicStoreServer.Domain.Interfaces.Album;
+using MusicStoreServer.Domain.Interfaces.Playlist;
+using MusicStoreServer.Domain.Interfaces.Song;
+using MusicStoreServer.Infrastructure.Data.Playlist;
+using MusicStoreServer.Infrastructure.Data.Song;
+using MusicStoreServer.Domain.Entities.Infrastructure;
 
 namespace MusicStoreServer.Web.Util
 {
@@ -50,7 +57,8 @@ namespace MusicStoreServer.Web.Util
             kernel.Bind<IGenreRepository>().To<GenreRepository>();
             kernel.Bind<IPlaylistRepository>().To<PlaylistRepository>();
             kernel.Bind<ISongRepository>().To<SongRepository>();
-
+            kernel.Bind<ILinkRepository>().To<LinkRepository>();
+            
             // service
             kernel.Bind<IUserService>().To<UserService>();
             kernel.Bind<IAccountService>().To<AccountService>();

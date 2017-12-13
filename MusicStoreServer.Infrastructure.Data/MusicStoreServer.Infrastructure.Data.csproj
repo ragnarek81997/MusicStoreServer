@@ -82,12 +82,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SongRepository.cs" />
-    <Compile Include="PlaylistRepository.cs" />
+    <Compile Include="Album\AlbumRepository.cs" />
+    <Compile Include="LinkRepository.cs" />
+    <Compile Include="Playlist\PlaylistRepository.cs" />
     <Compile Include="GenreRepository.cs" />
     <Compile Include="ArtistRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AlbumRepository.cs" />
+    <Compile Include="Song\SongRepository.cs" />
     <Compile Include="UserRepository.cs" />
     <Compile Include="Utility\AzureBlob\UploadBase.cs" />
     <Compile Include="Utility\AzureBlob\UploadSong.cs" />

@@ -15,6 +15,10 @@ namespace MusicStoreServer.Infrastructure.Data
 {
     public class UserRepository : GenericRepository<ApplicationUser>, IUserRepository
     {
+        public UserRepository(ApplicationDbContext applicationDbContext) : base(applicationDbContext)
+        {
+        }
+
         public async Task<DatabaseOneResult<ApplicationUser>> Get(string id)
         {
             return await base.FindOneAsync(id);
